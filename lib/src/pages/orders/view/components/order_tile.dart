@@ -145,10 +145,12 @@ class _OrderItemWidget extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            '${orderItem.quantity} ${orderItem.item.unit} ',
+            '${orderItem.quantity} ${orderItem.item?.unit} ',
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-          Expanded(child: Text(orderItem.item.itemName)),
+          Expanded(
+              child: Text(orderItem.item?.itemName ??
+                  'Erro! Entre em contato com a loja!')),
           Text(utilsServices.priceToCurrency(orderItem.totalPrice())),
         ],
       ),

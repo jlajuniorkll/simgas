@@ -12,11 +12,11 @@ class AppNameWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text.rich(TextSpan(style: TextStyle(fontSize: textSize), children: [
       TextSpan(
-          text: 'Green',
+          text: 'SIM',
           style: TextStyle(
               color: greenTitleColor ?? CustomColors.customSwatchColor)),
       TextSpan(
-          text: 'grocer',
+          text: 'GAS',
           style: TextStyle(color: CustomColors.customContrastColor)),
     ]));
   }

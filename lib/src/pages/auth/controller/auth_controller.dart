@@ -30,9 +30,16 @@ class AuthController extends GetxController {
     }
 
     AuthResult result = await authRepository.validateToken(token);
-    result.when(success: (user) {
+    result.when(success: (user) async {
       this.user = user;
-      saveTokenAndProccedToBase();
+      String resultHiper = await authRepository.getTokenHiper();
+      if (resultHiper == 'INVALID_TOKENHIPER') {
+        utilsServices.showToast(message: 'Não foi possível conectar ao hiper');
+        signOut();
+      } else {
+        user.tokenHiper = resultHiper;
+        saveTokenAndProccedToBase();
+      }
     }, error: (message) {
       signOut();
     });
@@ -42,9 +49,16 @@ class AuthController extends GetxController {
     isLoading.value = true;
     AuthResult result =
         await authRepository.signIn(email: email, password: password);
-    result.when(success: (user) {
-      this.user = user;
-      saveTokenAndProccedToBase();
+    result.when(success: (user) async {
+      String resultHiper = await authRepository.getTokenHiper();
+      if (resultHiper == 'INVALID_TOKENHIPER') {
+        utilsServices.showToast(message: 'Não foi possível conectar ao hiper');
+        signOut();
+      } else {
+        user.tokenHiper = resultHiper;
+        this.user = user;
+        saveTokenAndProccedToBase();
+      }
     }, error: (message) {
       utilsServices.showToast(message: message, isError: true);
     });
@@ -53,6 +67,8 @@ class AuthController extends GetxController {
 
   void saveTokenAndProccedToBase() {
     utilsServices.saveLocalData(key: StorageKeys.token, data: user.token!);
+    utilsServices.saveLocalData(
+        key: StorageKeys.tokenHiper, data: user.tokenHiper!);
     Get.offAllNamed(PagesRoutes.baseRoute);
   }
 
@@ -66,9 +82,16 @@ class AuthController extends GetxController {
     isLoading.value = true;
     AuthResult result = await authRepository.singUp(user);
     isLoading.value = false;
-    result.when(success: (user) {
-      this.user = user;
-      saveTokenAndProccedToBase();
+    result.when(success: (user) async {
+      String resultHiper = await authRepository.getTokenHiper();
+      if (resultHiper == 'INVALID_TOKENHIPER') {
+        utilsServices.showToast(message: 'Não foi possível conectar ao hiper');
+        signOut();
+      } else {
+        user.tokenHiper = resultHiper;
+        this.user = user;
+        saveTokenAndProccedToBase();
+      }
     }, error: (menssage) {
       utilsServices.showToast(message: menssage);
     });

@@ -20,6 +20,7 @@ abstract class AuthRepository {
     required String newPassword,
     required String token,
   });
+  Future<String> getTokenHiper();
 }
 
 class AuthRepositoryImpl implements AuthRepository {
@@ -95,5 +96,19 @@ class AuthRepositoryImpl implements AuthRepository {
         });
 
     return result['error'] == null;
+  }
+
+  @override
+  Future<String> getTokenHiper() async {
+    final result = await _httpManager.restRequest(
+      url: Endpoints.getTokenHiper,
+      method: HttpMethods.get,
+    );
+
+    if (result['errors'] != []) {
+      return result['token'];
+    } else {
+      return 'INVALID_TOKENHIPER';
+    }
   }
 }

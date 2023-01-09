@@ -15,9 +15,6 @@ class OrderModel {
   @JsonKey(name: 'due')
   DateTime overdueDateTime;
 
-  @JsonKey(defaultValue: [])
-  List<CartItemModel> items;
-
   String status;
 
   @JsonKey(name: 'copiaecola')
@@ -26,6 +23,13 @@ class OrderModel {
   @JsonKey(name: 'total')
   double doubleTotal;
   String qrCodeImage;
+
+  @JsonKey(defaultValue: [])
+  List<CartItemModel> items;
+
+  String numeroPedidoDeVenda;
+  String observacaoDoPedidoDeVenda;
+  double valorDoFrete;
 
   bool get isOverDue => overdueDateTime.isBefore(DateTime.now());
 
@@ -38,6 +42,9 @@ class OrderModel {
     required this.copyAndPaste,
     required this.doubleTotal,
     required this.qrCodeImage,
+    this.numeroPedidoDeVenda = '',
+    this.observacaoDoPedidoDeVenda = '',
+    this.valorDoFrete = 0,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) =>

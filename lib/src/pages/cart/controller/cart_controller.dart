@@ -1,10 +1,12 @@
 import 'package:dartt_shop/src/models/cart_itemmodel.dart';
 import 'package:dartt_shop/src/models/item_model.dart';
 import 'package:dartt_shop/src/models/order_model.dart';
+import 'package:dartt_shop/src/models/pagamento_model.dart';
 import 'package:dartt_shop/src/pages/auth/controller/auth_controller.dart';
 import 'package:dartt_shop/src/pages/cart/repository/cart_repository.dart';
 import 'package:dartt_shop/src/pages/cart/result/cart_result.dart';
 import 'package:dartt_shop/src/pages/commons/payment_dialog.dart';
+import 'package:dartt_shop/src/pages/home/controller/home_controller.dart';
 import 'package:dartt_shop/src/services/utils_services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -15,7 +17,11 @@ class CartController extends GetxController {
   CartController(this.cartRepository);
 
   final authController = Get.find<AuthController>();
+  final prodController = Get.find<HomeController>();
   final utilServices = UtilsServices();
+  List<MeiosPagamentoModel> meiosPagamento = [
+    MeiosPagamentoModel(idMeioPagamento: 1, parcelas: 1, valor: 15.00)
+  ];
 
   List<CartItemModel> cartItems = [];
   bool isCheckoutLoading = false;
@@ -40,6 +46,10 @@ class CartController extends GetxController {
 
     result.when(success: (data) {
       cartItems = data;
+      for (var c in cartItems) {
+        c.item =
+            prodController.allProducts.where((p) => p.id == c.productId).first;
+      }
       update();
     }, error: (message) {
       utilServices.showToast(message: message, isError: true);
@@ -56,8 +66,20 @@ class CartController extends GetxController {
 
   Future checkoutCart() async {
     setCheckoutLoading(true);
+    List<CartItemModelHiper> cartModelHiper = [];
+    for (var i in cartItems) {
+      cartModelHiper.add(CartItemModelHiper(
+          produtoId: i.productId,
+          quantidade: i.quantity.toDouble(),
+          precoUnitarioBruto: i.totalPrice(),
+          precoUnitarioLiquido: i.totalPrice()));
+    }
     CartResult<OrderModel> result = await cartRepository.checkoutCart(
-        token: authController.user.token!, total: cartTotalPrice());
+        token: authController.user.token!,
+        total: cartTotalPrice(),
+        cliente: authController.user,
+        items: cartModelHiper,
+        meiosPagamento: meiosPagamento);
     setCheckoutLoading(false);
     result.when(success: (order) {
       cartItems.clear();
@@ -75,7 +97,7 @@ class CartController extends GetxController {
   }
 
   int getItemIndex(ItemModel item) {
-    return cartItems.indexWhere((itemInList) => itemInList.item.id == item.id);
+    return cartItems.indexWhere((itemInList) => itemInList.item!.id == item.id);
   }
 
   Future<void> addItemToCart(
@@ -89,10 +111,11 @@ class CartController extends GetxController {
       final CartResult<String> result = await cartRepository.addItemToCart(
           userId: authController.user.id!,
           token: authController.user.token!,
-          productId: item.id,
+          productId: item.id.toString(),
           quantity: quantity);
       result.when(success: (data) {
-        cartItems.add(CartItemModel(id: data, item: item, quantity: quantity));
+        cartItems.add(CartItemModel(
+            id: data, item: item, quantity: quantity, productId: item.id));
       }, error: (message) {
         utilServices.showToast(message: message, isError: true);
       });

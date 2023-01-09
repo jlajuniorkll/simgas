@@ -9,18 +9,21 @@ part 'cart_itemmodel.g.dart';
 @JsonSerializable()
 class CartItemModel {
   @JsonKey(name: 'product')
-  ItemModel item;
+  String productId;
+  ItemModel? item;
   int quantity;
   String id;
 
   CartItemModel({
+    required this.productId,
     required this.id,
-    required this.item,
+    this.item,
     required this.quantity,
   });
 
   double totalPrice() {
-    return item.price * quantity;
+    final price = item?.price ?? 0;
+    return price * quantity;
   }
 
   factory CartItemModel.fromJson(Map<String, dynamic> json) =>
@@ -31,4 +34,24 @@ class CartItemModel {
   @override
   String toString() =>
       'CartItemModel(item: $item, quantity: $quantity, id: $id)';
+}
+
+@JsonSerializable()
+class CartItemModelHiper {
+  String produtoId;
+  double quantidade;
+  double precoUnitarioBruto;
+  double precoUnitarioLiquido;
+
+  CartItemModelHiper({
+    required this.produtoId,
+    required this.quantidade,
+    required this.precoUnitarioBruto,
+    required this.precoUnitarioLiquido,
+  });
+
+  factory CartItemModelHiper.fromJson(Map<String, dynamic> json) =>
+      _$CartItemModelHiperFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CartItemModelHiperToJson(this);
 }

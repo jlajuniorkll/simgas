@@ -1,5 +1,6 @@
-import 'package:dartt_shop/src/models/category_model.dart';
+import 'package:collection/collection.dart';
 import 'package:dartt_shop/src/models/item_model.dart';
+import 'package:dartt_shop/src/pages/auth/controller/auth_controller.dart';
 import 'package:dartt_shop/src/pages/home/repository/home_repository.dart';
 import 'package:dartt_shop/src/pages/home/result/home_result.dart';
 import 'package:dartt_shop/src/services/utils_services.dart';
@@ -12,25 +13,25 @@ class HomeController extends GetxController {
   HomeController(this.homeRepository);
 
   final utilservices = UtilsServices();
+  final authController = Get.find<AuthController>();
 
-  List<CategoryModel> allCategories = [];
-  List<ItemModel> get allProducts => currentCategory?.items ?? [];
+  List<ItemModel> allProducts = [];
+  List<ItemModel> allProductsFiltered = [];
+  List<String> categoriesHiper = [];
 
   RxString searchTitle = ''.obs;
 
-  bool get isLastPage {
-    if (currentCategory!.items.length < itemsPerPage) return true;
-    return currentCategory!.pagination * itemsPerPage > allProducts.length;
-  }
-
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
     // função do getx
     debounce(searchTitle, (_) => filterByTitle(),
         time: const Duration(milliseconds: 600));
 
-    getAllCategories();
+    // getAllProductsHiper();
+    await getAllCategoriesHiper();
+    categoriesHiper.insert(0, 'Todos');
+    selectCategory('Todos');
   }
 
   bool isCategoryLoading = false;
@@ -45,54 +46,63 @@ class HomeController extends GetxController {
     update();
   }
 
-  CategoryModel? currentCategory;
-  void selectCategory(CategoryModel category) {
+  String? currentCategory;
+  void selectCategory(String category) {
     currentCategory = category;
+    allProductsFiltered.clear();
+
+    if (currentCategory != 'Todos') {
+      allProductsFiltered.addAll(
+          allProducts.where((x) => x.categoria.contains(currentCategory!)));
+    } else {
+      allProductsFiltered.addAll(allProducts);
+    }
+
     update();
-    if (currentCategory!.items.isNotEmpty) return;
-    getAllProducts();
+    if (currentCategory != null) return;
+    getAllProductsHiper();
   }
 
-  Future<void> getAllCategories() async {
+  Future<void> getAllCategoriesHiper() async {
     setLoading(true);
-
-    HomeResult<CategoryModel> homeResult =
-        await homeRepository.getAllCategories();
-    homeResult.when(
-      success: (data) {
-        allCategories.assignAll(data);
-
-        if (allCategories.isEmpty) return;
-        selectCategory(allCategories.first);
-      },
-      error: (message) {
-        utilservices.showToast(message: message, isError: true);
-      },
-    );
-
+    await getAllProductsHiper();
+    update();
+    var newMap = groupBy(allProducts, (ItemModel obj) => obj.categoria)
+        .map((k, v) => MapEntry(
+            k,
+            v.map((item) {
+              return item;
+            }).toList()));
+    for (var i in newMap.keys) {
+      categoriesHiper.add(i);
+    }
+    update();
     setLoading(false);
   }
 
-  Future<void> getAllProducts({bool canLoad = true}) async {
+  void filterByTitle() {
+    if (searchTitle.value.isNotEmpty) {
+      selectCategory('Todos');
+      allProductsFiltered.clear();
+      allProductsFiltered.addAll(allProducts.where((e) =>
+          e.itemName.toUpperCase().contains(searchTitle.value.toUpperCase())));
+    } else {
+      allProductsFiltered.clear();
+      allProductsFiltered.addAll(allProducts);
+    }
+    update();
+  }
+
+  Future<void> getAllProductsHiper({bool canLoad = true}) async {
+    allProducts.clear();
     if (canLoad) {
       setLoading(true, isProduct: true);
     }
-    Map<String, dynamic> body = {
-      'page': currentCategory!.pagination,
-      'categoryId': currentCategory!.id,
-      'itemsPerPage': itemsPerPage
-    };
-
-    if (searchTitle.value.isNotEmpty) {
-      body['title'] = searchTitle.value;
-      if (currentCategory!.id == '') {
-        body.remove('categoryId');
-      }
-    }
-    HomeResult<ItemModel> result = await homeRepository.getAllProducts(body);
+    HomeResult<ItemModel> result = await homeRepository.getAllProductsHiper(
+        tokenHiper: authController.user.tokenHiper!);
     result.when(
       success: (data) {
-        currentCategory!.items.addAll(data);
+        allProducts.addAll(data);
       },
       error: (message) {
         utilservices.showToast(message: message, isError: true);
@@ -100,36 +110,5 @@ class HomeController extends GetxController {
     );
 
     setLoading(false, isProduct: true);
-  }
-
-  void loadMoreProducts() {
-    currentCategory!.pagination++;
-    getAllProducts(canLoad: false);
-  }
-
-  void filterByTitle() {
-    for (var category in allCategories) {
-      category.items.clear();
-      category.pagination = 0;
-    }
-
-    if (searchTitle.value.isEmpty) {
-      allCategories.removeAt(0);
-    } else {
-      CategoryModel? c = allCategories.firstWhereOrNull((cat) => cat.id == '');
-
-      if (c == null) {
-        final allProductsCategory =
-            CategoryModel(items: [], title: 'Todos', id: '', pagination: 0);
-
-        allCategories.insert(0, allProductsCategory);
-      } else {
-        c.items.clear();
-        c.pagination = 0;
-      }
-    }
-    currentCategory = allCategories.first;
-    update();
-    getAllProducts();
   }
 }

@@ -1,6 +1,7 @@
 import 'package:dartt_shop/src/models/cart_itemmodel.dart';
 import 'package:dartt_shop/src/models/order_model.dart';
 import 'package:dartt_shop/src/pages/auth/controller/auth_controller.dart';
+import 'package:dartt_shop/src/pages/home/controller/home_controller.dart';
 import 'package:dartt_shop/src/pages/orders/repository/orders_repository.dart';
 import 'package:dartt_shop/src/pages/orders/result/orders_result.dart';
 import 'package:dartt_shop/src/services/http_manager.dart';
@@ -16,6 +17,7 @@ class OrderController extends GetxController {
       OrdersRepositoryImpl(HttpManagerImpl());
 
   final authController = Get.find<AuthController>();
+  final productsController = Get.find<HomeController>();
   final utilsServices = UtilsServices();
 
   bool isLoading = false;
@@ -31,7 +33,18 @@ class OrderController extends GetxController {
         .getOrderItems(token: authController.user.token!, orderId: order.id);
     setLoading(false);
     result.when(success: (items) {
-      order.items = items;
+      for (var item in items) {
+        for (var p in productsController.allProducts) {
+          if (item.productId == p.id) {
+            order.items.add(CartItemModel(
+                productId: item.productId,
+                item: p,
+                id: item.id,
+                quantity: item.quantity));
+          }
+        }
+      }
+      // order.items = items;
       update();
     }, error: (error) {
       utilsServices.showToast(message: error, isError: true);

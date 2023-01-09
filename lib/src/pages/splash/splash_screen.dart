@@ -1,6 +1,5 @@
 import 'package:dartt_shop/src/config/custom_colors.dart';
 import 'package:dartt_shop/src/pages/auth/controller/auth_controller.dart';
-import 'package:dartt_shop/src/pages/commons/appname_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -33,13 +32,21 @@ class _SplashScreenState extends State<SplashScreen> {
             ])),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: const [
-            AppNameWidget(
+          children: [
+            /*AppNameWidget(
               greenTitleColor: Colors.white,
               textSize: 40,
+            ),*/
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Image.asset(
+                'assets/appimages/logo-simgas.png',
+                height: 250,
+                width: 250,
+              ),
             ),
-            SizedBox(height: 10),
-            CircularProgressIndicator(
+            const SizedBox(height: 10),
+            const CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation(Colors.white),
             )
           ],

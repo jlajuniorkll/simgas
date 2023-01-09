@@ -38,8 +38,8 @@ class HttpManagerImpl implements HttpManager {
       ..addAll({
         'content-type': 'application/json',
         'accept': 'application/json',
-        'X-Parse-Application-Id': '8yM6C5u6fWWx84ZLL2Dvi2a8IMNTkvjxTM08vI57',
-        'X-Parse-REST-API-Key': 'IaX0Gw0ZLbB1a9u763EJpUYAVxWa33jQj0Etb5zh',
+        'X-Parse-Application-Id': 'PxFlRfrRT5zIjIvRlD2g9xaEYTO9QPawiM8wGo8e',
+        'X-Parse-REST-API-Key': 'Hx0byqGFMna8YK0XTtZ01QlBbaI7FZHnpQcLbDj3',
       });
 
     Dio dio = Dio();

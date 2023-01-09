@@ -122,18 +122,18 @@ class _HomeTabState extends State<HomeTab> {
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (_, index) {
                           return CategoryTile(
-                            category: controller.allCategories[index].title,
-                            isSelected: controller.allCategories[index] ==
+                            category: controller.categoriesHiper[index],
+                            isSelected: controller.categoriesHiper[index] ==
                                 controller.currentCategory,
                             onPressed: () {
                               controller.selectCategory(
-                                  controller.allCategories[index]);
+                                  controller.categoriesHiper[index]);
                             },
                           );
                         },
                         separatorBuilder: (_, index) =>
                             const SizedBox(width: 10),
-                        itemCount: controller.allCategories.length)
+                        itemCount: controller.categoriesHiper.length)
                     : ListView(
                         scrollDirection: Axis.horizontal,
                         children: List.generate(
@@ -154,8 +154,7 @@ class _HomeTabState extends State<HomeTab> {
               return Expanded(
                   child: !controller.isProductLoading
                       ? Visibility(
-                          visible: (controller.currentCategory?.items ?? [])
-                              .isNotEmpty,
+                          visible: (controller.allProductsFiltered).isNotEmpty,
                           replacement: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -177,16 +176,16 @@ class _HomeTabState extends State<HomeTab> {
                               crossAxisSpacing: 10,
                               childAspectRatio: 9 / 11.5,
                             ),
-                            itemCount: controller.allProducts.length,
+                            itemCount: controller.allProductsFiltered.length,
                             itemBuilder: (_, index) {
-                              if ((index + 1) ==
-                                  controller.allProducts.length) {
-                                if (!controller.isLastPage) {
-                                  controller.loadMoreProducts();
-                                }
-                              }
+                              //if ((index + 1) ==
+                              //    controller.allProducts.length) {
+                              //if (!controller.isLastPage) {
+                              //  controller.loadMoreProducts();
+                              //}
+                              //}
                               return ProductTile(
-                                item: controller.allProducts[index],
+                                item: controller.allProductsFiltered[index],
                                 cartAnimationMethod: itemSelectedCartAnimations,
                               );
                             },

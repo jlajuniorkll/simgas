@@ -25,18 +25,24 @@ class _CartTileState extends State<CartTile> {
       margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: ListTile(
-        leading: Image.network(
-          widget.cartItem.item.imgUrl,
-          height: 60.0,
-          width: 60.0,
-        ),
+        leading: widget.cartItem.item?.imgUrl != null
+            ? Image.network(
+                widget.cartItem.item!.imgUrl,
+                height: 60.0,
+                width: 60.0,
+              )
+            : Image.asset(
+                'assets/appimages/notimage.png',
+                height: 60.0,
+                width: 60.0,
+              ),
         title: Text(
-          widget.cartItem.item.itemName,
+          widget.cartItem.item?.itemName ?? 'Não enviado',
           style: const TextStyle(fontWeight: FontWeight.w500),
         ),
         trailing: QuantityWidget(
           value: widget.cartItem.quantity,
-          suffixText: widget.cartItem.item.unit,
+          suffixText: widget.cartItem.item?.unit ?? '0',
           result: (quantity) {
             setState(() {
               controller.changeItemQuantity(

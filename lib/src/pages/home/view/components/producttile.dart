@@ -59,7 +59,7 @@ class _ProductTileState extends State<ProductTile> {
                 children: [
                   Expanded(
                       child: Hero(
-                          tag: widget.item.imgUrl,
+                          tag: widget.item.id,
                           child:
                               Image.network(widget.item.imgUrl, key: imageGk))),
                   Text(

@@ -1,6 +1,9 @@
 import 'package:dartt_shop/src/constants/endpoints.dart';
 import 'package:dartt_shop/src/models/cart_itemmodel.dart';
+import 'package:dartt_shop/src/models/endereco_model.dart';
 import 'package:dartt_shop/src/models/order_model.dart';
+import 'package:dartt_shop/src/models/pagamento_model.dart';
+import 'package:dartt_shop/src/models/user_model.dart';
 import 'package:dartt_shop/src/pages/cart/result/cart_result.dart';
 import 'package:dartt_shop/src/services/http_manager.dart';
 
@@ -12,8 +15,13 @@ abstract class CartRepository {
       required String token,
       required String productId,
       required int quantity});
-  Future<CartResult<OrderModel>> checkoutCart(
-      {required String token, required double total});
+  Future<CartResult<OrderModel>> checkoutCart({
+    required String token,
+    required double total,
+    required UserModel cliente,
+    required List<CartItemModelHiper> items,
+    required List<MeiosPagamentoModel> meiosPagamento,
+  });
   Future<bool> changeItemQuantity(
       {required String token,
       required String cartItemId,
@@ -77,8 +85,13 @@ class CartRepositoryImpl implements CartRepository {
   }
 
   @override
-  Future<CartResult<OrderModel>> checkoutCart(
-      {required String token, required double total}) async {
+  Future<CartResult<OrderModel>> checkoutCart({
+    required String token,
+    required double total,
+    required UserModel cliente,
+    required List<CartItemModelHiper> items,
+    required List<MeiosPagamentoModel> meiosPagamento,
+  }) async {
     final result = await _httpManager.restRequest(
       url: Endpoints.checkout,
       method: HttpMethods.post,
@@ -90,6 +103,23 @@ class CartRepositoryImpl implements CartRepository {
 
     if (result['result'] != null) {
       final order = OrderModel.fromJson(result['result']);
+      cliente.endereco = EnderecoModel(
+          cep: "95088530",
+          logradouro: "Rua Giovani Batastini",
+          numero: "1115",
+          bairro: "São Victor Cohab",
+          codigoIBGE: "4305108");
+      cliente.entrega = cliente.endereco;
+      await postPedidoDeVendaHiper(
+          tokenHiper: cliente.tokenHiper!,
+          cliente: cliente,
+          endereco: cliente.endereco!,
+          entrega: cliente.entrega!,
+          itens: items,
+          meiosPagamento: meiosPagamento,
+          pedidoVenda: order.numeroPedidoDeVenda,
+          observacao: order.observacaoDoPedidoDeVenda,
+          valorFrete: order.valorDoFrete);
       return CartResult<OrderModel>.success(order);
     } else {
       return CartResult.error('Não foi possível finalizar o pedido');
@@ -113,5 +143,70 @@ class CartRepositoryImpl implements CartRepository {
         });
 
     return result.isEmpty;
+  }
+
+  Future<bool> postPedidoDeVendaHiper(
+      {required String tokenHiper,
+      required UserModel cliente,
+      required EnderecoModel endereco,
+      required EnderecoModel entrega,
+      required List<CartItemModelHiper> itens,
+      required List<MeiosPagamentoModel> meiosPagamento,
+      required String pedidoVenda,
+      required String observacao,
+      required double valorFrete}) async {
+    final bodyReq = {
+      "cliente": {
+        "documento": cliente.cpf,
+        "email": cliente.email,
+        "inscricaoEstadual": '',
+        "nomeDoCliente": cliente.name,
+        "nomeFantasia": ''
+      },
+      "enderecoDeCobranca": {
+        "bairro": endereco.bairro,
+        "cep": endereco.cep,
+        "codigoIbge": int.parse(endereco.codigoIBGE),
+        "complemento": endereco.complemento,
+        "logradouro": endereco.logradouro,
+        "numero": endereco.numero
+      },
+      "enderecoDeEntrega": {
+        "bairro": endereco.bairro,
+        "cep": endereco.cep,
+        "codigoIbge": int.parse(endereco.codigoIBGE),
+        "complemento": endereco.complemento,
+        "logradouro": endereco.logradouro,
+        "numero": endereco.numero
+      },
+      "numeroPedidoDeVenda": pedidoVenda,
+      "observacaoDoPedidoDeVenda": observacao,
+      "valorDoFrete": valorFrete,
+      "itens": itens
+          .map((e) => {
+                "produtoId": e.produtoId,
+                "quantidade": e.quantidade,
+                "precoUnitarioBruto": e.precoUnitarioBruto,
+                "precoUnitarioLiquido": e.precoUnitarioLiquido
+              })
+          .toList(),
+      "meiosDePagamento": meiosPagamento
+          .map((e) => {
+                "idMeioDePagamento": e.idMeioPagamento,
+                "parcelas": e.parcelas,
+                "valor": e.valor
+              })
+          .toList(),
+    };
+    final result = await _httpManager.restRequest(
+        url: Endpoints.postPedidoDeVenda,
+        method: HttpMethods.post,
+        headers: {"Authorization": "Bearer $tokenHiper"},
+        body: bodyReq);
+    if (result['menssagem'] != null) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

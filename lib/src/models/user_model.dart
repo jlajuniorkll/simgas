@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:dartt_shop/src/models/endereco_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 // isso deve ser colocado na mão e após rodar o build runner
@@ -15,6 +16,9 @@ class UserModel {
   String? phone;
   String? id;
   String? token;
+  String? tokenHiper;
+  EnderecoModel? entrega;
+  EnderecoModel? endereco;
 
   UserModel({
     this.name,
@@ -24,6 +28,9 @@ class UserModel {
     this.password,
     this.id,
     this.token,
+    this.tokenHiper,
+    this.entrega,
+    this.endereco,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>

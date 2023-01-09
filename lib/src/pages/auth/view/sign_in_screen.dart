@@ -3,7 +3,6 @@ import 'package:dartt_shop/src/config/custom_colors.dart';
 import 'package:dartt_shop/src/page_routes/app_pages.dart';
 import 'package:dartt_shop/src/pages/auth/controller/auth_controller.dart';
 import 'package:dartt_shop/src/pages/auth/view/components/forgot_password_dialog.dart';
-import 'package:dartt_shop/src/pages/commons/appname_widget.dart';
 import 'package:dartt_shop/src/pages/commons/custom_text_field.dart';
 import 'package:dartt_shop/src/services/utils_services.dart';
 import 'package:dartt_shop/src/services/validators.dart';
@@ -35,9 +34,17 @@ class SignInScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // Nome do app
-                  const AppNameWidget(
+                  /*const AppNameWidget(
                     greenTitleColor: Colors.white,
                     textSize: 40,
+                  ),*/
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Image.asset(
+                      'assets/appimages/logo-simgas.png',
+                      height: 250,
+                      width: 250,
+                    ),
                   ),
                   // categorias
                   SizedBox(
@@ -48,11 +55,10 @@ class SignInScreen extends StatelessWidget {
                           pause: Duration.zero,
                           repeatForever: true,
                           animatedTexts: [
-                            FadeAnimatedText('Frutas'),
-                            FadeAnimatedText('Carnes'),
-                            FadeAnimatedText('Naturais'),
-                            FadeAnimatedText('Verduras'),
-                            FadeAnimatedText('Orgânicos'),
+                            FadeAnimatedText('Bem vindo!'),
+                            FadeAnimatedText('Gás'),
+                            FadeAnimatedText('Água Mineral'),
+                            FadeAnimatedText('Acessórios'),
                           ]),
                     ),
                   )

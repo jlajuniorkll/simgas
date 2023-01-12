@@ -17,6 +17,8 @@ class _ProfileTabState extends State<ProfileTab> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    const percentScreen = 0.6;
     return Scaffold(
       appBar: AppBar(
         title: const Text("Perfil do usuário"),
@@ -29,46 +31,53 @@ class _ProfileTabState extends State<ProfileTab> {
           )
         ],
       ),
-      body: ListView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(16, 32, 16, 16),
-          children: [
-            CustomTextField(
-              icon: Icons.person,
-              label: "Nome",
-              iniValue: authController.user.name,
-              isInActive: true,
-            ),
-            CustomTextField(
-              icon: Icons.file_copy,
-              label: "CPF",
-              isSecret: true,
-              iniValue: authController.user.cpf,
-              isInActive: true,
-            ),
-            CustomTextField(
-              icon: Icons.phone,
-              label: "Celular",
-              iniValue: authController.user.phone,
-              isInActive: true,
-            ),
-            CustomTextField(
-              icon: Icons.email,
-              label: "Email",
-              iniValue: authController.user.email,
-              isInActive: true,
-            ),
-            SizedBox(
-              height: 50,
-              child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20)),
-                      side: BorderSide(color: CustomColors.customSwatchColor)),
-                  onPressed: () => updatePassword(),
-                  child: const Text("Atualizar senha")),
-            )
-          ]),
+      body: Center(
+        child: SizedBox(
+          height: size.height,
+          width: size.width < 800 ? size.width : size.width * percentScreen,
+          child: ListView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(16, 32, 16, 16),
+              children: [
+                CustomTextField(
+                  icon: Icons.person,
+                  label: "Nome",
+                  iniValue: authController.user.name,
+                  isInActive: true,
+                ),
+                CustomTextField(
+                  icon: Icons.file_copy,
+                  label: "CPF",
+                  isSecret: true,
+                  iniValue: authController.user.cpf,
+                  isInActive: true,
+                ),
+                CustomTextField(
+                  icon: Icons.phone,
+                  label: "Celular",
+                  iniValue: authController.user.phone,
+                  isInActive: true,
+                ),
+                CustomTextField(
+                  icon: Icons.email,
+                  label: "Email",
+                  iniValue: authController.user.email,
+                  isInActive: true,
+                ),
+                SizedBox(
+                  height: 50,
+                  child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20)),
+                          side: BorderSide(
+                              color: CustomColors.customSwatchColor)),
+                      onPressed: () => updatePassword(),
+                      child: const Text("Atualizar senha")),
+                )
+              ]),
+        ),
+      ),
     );
   }
 

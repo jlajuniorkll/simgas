@@ -1,4 +1,5 @@
 import 'package:dartt_shop/src/models/cart_itemmodel.dart';
+import 'package:dartt_shop/src/models/endereco_model.dart';
 import 'package:dartt_shop/src/models/item_model.dart';
 import 'package:dartt_shop/src/models/order_model.dart';
 import 'package:dartt_shop/src/models/pagamento_model.dart';
@@ -19,21 +20,36 @@ class CartController extends GetxController {
   final authController = Get.find<AuthController>();
   final prodController = Get.find<HomeController>();
   final utilServices = UtilsServices();
-  List<MeiosPagamentoModel> meiosPagamento = [
-    MeiosPagamentoModel(idMeioPagamento: 1, parcelas: 1, valor: 15.00)
-  ];
 
+  List<MeiosPagamentoModel> meiosPagamento = [];
   List<CartItemModel> cartItems = [];
   bool isCheckoutLoading = false;
+  EnderecoModel? endereco;
 
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
-    getCartItems();
+    await getCartItems();
   }
 
   void setCheckoutLoading(bool value) {
     isCheckoutLoading = value;
+    update();
+  }
+
+  void setMeiosPagamento(MeiosPagamentoModel value) {
+    meiosPagamento.clear();
+    meiosPagamento.add(value);
+    update();
+  }
+
+  void setEndereco(EnderecoModel value) {
+    endereco!.cep = value.cep;
+    endereco!.logradouro = value.logradouro;
+    endereco!.numero = value.numero;
+    endereco!.bairro = value.bairro;
+    endereco!.complemento = value.complemento;
+    endereco!.codigoIBGE = value.codigoIBGE;
     update();
   }
 
@@ -44,11 +60,21 @@ class CartController extends GetxController {
       userId: authController.user.id!,
     );
 
-    result.when(success: (data) {
+    result.when(success: (data) async {
       cartItems = data;
+      if (prodController.allProducts.isEmpty) {
+        await prodController.getAllProductsHiper();
+      }
       for (var c in cartItems) {
-        c.item =
+        final prod =
             prodController.allProducts.where((p) => p.id == c.productId).first;
+        c.item = ItemModel(
+            itemName: prod.itemName,
+            imgUrl: prod.imgUrl,
+            unit: prod.unit,
+            price: prod.price,
+            description: prod.description,
+            categoria: prod.categoria);
       }
       update();
     }, error: (message) {

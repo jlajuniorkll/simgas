@@ -28,7 +28,6 @@ class HomeController extends GetxController {
     debounce(searchTitle, (_) => filterByTitle(),
         time: const Duration(milliseconds: 600));
 
-    // getAllProductsHiper();
     await getAllCategoriesHiper();
     categoriesHiper.insert(0, 'Todos');
     selectCategory('Todos');
@@ -47,7 +46,7 @@ class HomeController extends GetxController {
   }
 
   String? currentCategory;
-  void selectCategory(String category) {
+  void selectCategory(String category) async {
     currentCategory = category;
     allProductsFiltered.clear();
 
@@ -57,16 +56,14 @@ class HomeController extends GetxController {
     } else {
       allProductsFiltered.addAll(allProducts);
     }
-
     update();
     if (currentCategory != null) return;
-    getAllProductsHiper();
+    await getAllProductsHiper();
   }
 
   Future<void> getAllCategoriesHiper() async {
     setLoading(true);
     await getAllProductsHiper();
-    update();
     var newMap = groupBy(allProducts, (ItemModel obj) => obj.categoria)
         .map((k, v) => MapEntry(
             k,
@@ -76,24 +73,22 @@ class HomeController extends GetxController {
     for (var i in newMap.keys) {
       categoriesHiper.add(i);
     }
-    update();
     setLoading(false);
   }
 
   void filterByTitle() {
+    allProductsFiltered.clear();
     if (searchTitle.value.isNotEmpty) {
       selectCategory('Todos');
-      allProductsFiltered.clear();
       allProductsFiltered.addAll(allProducts.where((e) =>
           e.itemName.toUpperCase().contains(searchTitle.value.toUpperCase())));
     } else {
-      allProductsFiltered.clear();
       allProductsFiltered.addAll(allProducts);
     }
-    update();
   }
 
   Future<void> getAllProductsHiper({bool canLoad = true}) async {
+    allProductsFiltered.clear();
     allProducts.clear();
     if (canLoad) {
       setLoading(true, isProduct: true);
@@ -108,7 +103,6 @@ class HomeController extends GetxController {
         utilservices.showToast(message: message, isError: true);
       },
     );
-
     setLoading(false, isProduct: true);
   }
 }

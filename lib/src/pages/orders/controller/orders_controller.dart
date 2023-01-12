@@ -13,22 +13,31 @@ class AllOrdersController extends GetxController {
   final authController = Get.find<AuthController>();
   final utilsServices = UtilsServices();
 
+  bool isLoading = false;
+
+  void setLoading(bool value) {
+    isLoading = value;
+    update();
+  }
+
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
-    getAllOrders();
+    await getAllOrders();
   }
 
   Future<void> getAllOrders() async {
+    setLoading(true);
+    allOrders.clear();
     OrdersResult<List<OrderModel>> result = await ordersRepository.getAllOrders(
         token: authController.user.token!, userId: authController.user.token!);
-
+    setLoading(false);
     result.when(success: (orders) {
       allOrders = orders
         ..sort((a, b) => b.createdDateTime!.compareTo(a.createdDateTime!));
-      update();
     }, error: (message) {
       utilsServices.showToast(message: message, isError: true);
     });
+    update();
   }
 }

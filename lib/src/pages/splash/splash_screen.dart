@@ -43,6 +43,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 'assets/appimages/logo-simgas.png',
                 height: 250,
                 width: 250,
+                filterQuality: FilterQuality.high,
               ),
             ),
             const SizedBox(height: 10),

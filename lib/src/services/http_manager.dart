@@ -36,6 +36,10 @@ class HttpManagerImpl implements HttpManager {
 
     final defaultHeaders = headers?.cast<String, String>() ?? {}
       ..addAll({
+        /*"Access-Control-Allow-Origin": "*", // Required for CORS support to work
+        "Access-Control-Allow-Headers":
+            "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale,X-Parse-Application-Id,X-Parse-REST-API-Key,X-Parse-Session-Token",
+        "Access-Control-Allow-Methods": "POST,GET,OPTIONS,HEAD",*/
         'content-type': 'application/json',
         'accept': 'application/json',
         'X-Parse-Application-Id': 'PxFlRfrRT5zIjIvRlD2g9xaEYTO9QPawiM8wGo8e',

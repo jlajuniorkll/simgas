@@ -29,6 +29,7 @@ class OrderController extends GetxController {
 
   Future<void> getOrderItems() async {
     setLoading(true);
+    order.items.clear();
     final OrdersResult<List<CartItemModel>> result = await orderRepository
         .getOrderItems(token: authController.user.token!, orderId: order.id);
     setLoading(false);
@@ -36,16 +37,13 @@ class OrderController extends GetxController {
       for (var item in items) {
         for (var p in productsController.allProducts) {
           if (item.productId == p.id) {
-            order.items.add(CartItemModel(
-                productId: item.productId,
-                item: p,
-                id: item.id,
-                quantity: item.quantity));
+            item.item = p;
+            order.items.add(item);
+            update();
           }
         }
       }
       // order.items = items;
-      update();
     }, error: (error) {
       utilsServices.showToast(message: error, isError: true);
     });

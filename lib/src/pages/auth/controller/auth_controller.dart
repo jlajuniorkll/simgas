@@ -16,10 +16,9 @@ class AuthController extends GetxController {
 
   UserModel user = UserModel();
 
-  //@override
-  //void onInit() {
+  // @override
+  // void onInit() async {
   //  super.onInit();
-  //  validateToken();
   //}
 
   Future<void> validateToken() async {
@@ -28,18 +27,10 @@ class AuthController extends GetxController {
       Get.offAllNamed(PagesRoutes.signinRoute);
       return;
     }
-
     AuthResult result = await authRepository.validateToken(token);
     result.when(success: (user) async {
       this.user = user;
-      String resultHiper = await authRepository.getTokenHiper();
-      if (resultHiper == 'INVALID_TOKENHIPER') {
-        utilsServices.showToast(message: 'Não foi possível conectar ao hiper');
-        signOut();
-      } else {
-        user.tokenHiper = resultHiper;
-        saveTokenAndProccedToBase();
-      }
+      saveTokenAndProccedToBase();
     }, error: (message) {
       signOut();
     });
@@ -50,26 +41,22 @@ class AuthController extends GetxController {
     AuthResult result =
         await authRepository.signIn(email: email, password: password);
     result.when(success: (user) async {
-      String resultHiper = await authRepository.getTokenHiper();
-      if (resultHiper == 'INVALID_TOKENHIPER') {
-        utilsServices.showToast(message: 'Não foi possível conectar ao hiper');
-        signOut();
-      } else {
-        user.tokenHiper = resultHiper;
-        this.user = user;
-        saveTokenAndProccedToBase();
-      }
+      this.user = user;
+      saveTokenAndProccedToBase();
     }, error: (message) {
       utilsServices.showToast(message: message, isError: true);
     });
     isLoading.value = false;
   }
 
-  void saveTokenAndProccedToBase() {
-    utilsServices.saveLocalData(key: StorageKeys.token, data: user.token!);
-    utilsServices.saveLocalData(
-        key: StorageKeys.tokenHiper, data: user.tokenHiper!);
-    Get.offAllNamed(PagesRoutes.baseRoute);
+  void saveTokenAndProccedToBase() async {
+    final result = await getTokenHiper();
+    if (result) {
+      utilsServices.saveLocalData(key: StorageKeys.token, data: user.token!);
+      Get.offAllNamed(PagesRoutes.baseRoute);
+    } else {
+      utilsServices.showToast(message: 'Erro ao conectar com o Hiper');
+    }
   }
 
   Future<void> signOut() async {
@@ -82,16 +69,9 @@ class AuthController extends GetxController {
     isLoading.value = true;
     AuthResult result = await authRepository.singUp(user);
     isLoading.value = false;
-    result.when(success: (user) async {
-      String resultHiper = await authRepository.getTokenHiper();
-      if (resultHiper == 'INVALID_TOKENHIPER') {
-        utilsServices.showToast(message: 'Não foi possível conectar ao hiper');
-        signOut();
-      } else {
-        user.tokenHiper = resultHiper;
-        this.user = user;
-        saveTokenAndProccedToBase();
-      }
+    result.when(success: (user) {
+      this.user = user;
+      saveTokenAndProccedToBase();
     }, error: (menssage) {
       utilsServices.showToast(message: menssage);
     });
@@ -120,6 +100,18 @@ class AuthController extends GetxController {
     } else {
       utilsServices.showToast(
           message: 'A senha atual está incorreta', isError: true);
+    }
+  }
+
+  Future<bool> getTokenHiper() async {
+    String resultHiper = await authRepository.getTokenHiper();
+    if (resultHiper == 'INVALID_TOKENHIPER') {
+      utilsServices.showToast(message: 'Não foi possível conectar ao hiper');
+      return false;
+    } else {
+      user.tokenHiper = resultHiper;
+      update();
+      return true;
     }
   }
 }

@@ -50,3 +50,48 @@ String? cpfValidator(String? cpf) {
 
   return null;
 }
+
+String? nParcelasValidator(String? nParcelas) {
+  if (nParcelas == null || nParcelas.isEmpty) {
+    return 'Digite o número de parcelas';
+  }
+
+  if (nParcelas.length > 6) {
+    return 'Parcelar até 6x';
+  }
+
+  return null;
+}
+
+String? cepValidator(String? cep) {
+  if (cep == null || cep.isEmpty) {
+    return 'Digite o CEP';
+  }
+
+  if (cep.length > 9) {
+    return 'CEP inválido';
+  }
+
+  return null;
+}
+
+String? logradouroValidator(String? logradouro) {
+  if (logradouro == null || logradouro.isEmpty) {
+    return 'Rua deve ser preenchida';
+  }
+  return null;
+}
+
+String? bairroValidator(String? bairro) {
+  if (bairro == null || bairro.isEmpty) {
+    return 'Rua deve ser preenchida';
+  }
+  return null;
+}
+
+String? numeroValidator(String? numero) {
+  if (numero == null || numero.isEmpty) {
+    return 'Número deve ser preenchido';
+  }
+  return null;
+}

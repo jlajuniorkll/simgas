@@ -95,3 +95,24 @@ String? numeroValidator(String? numero) {
   }
   return null;
 }
+
+String? referenciaValidator(String? referencia) {
+  if (referencia == null || referencia.isEmpty) {
+    return 'Digite um ponto de referência';
+  }
+  return null;
+}
+
+String? cidadeValidator(String? cidade) {
+  if (cidade == null || cidade.isEmpty) {
+    return 'Digite a cidade';
+  }
+  return null;
+}
+
+String? estadoValidator(String? estado) {
+  if (estado == null || estado.isEmpty) {
+    return 'Digite o estado';
+  }
+  return null;
+}

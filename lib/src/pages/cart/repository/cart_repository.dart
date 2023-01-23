@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dartt_shop/src/constants/endpoints.dart';
 import 'package:dartt_shop/src/models/cart_itemmodel.dart';
 import 'package:dartt_shop/src/models/endereco_model.dart';
@@ -6,6 +8,7 @@ import 'package:dartt_shop/src/models/pagamento_model.dart';
 import 'package:dartt_shop/src/models/user_model.dart';
 import 'package:dartt_shop/src/pages/cart/result/cart_result.dart';
 import 'package:dartt_shop/src/services/http_manager.dart';
+import 'package:http/http.dart' as http;
 
 abstract class CartRepository {
   Future<CartResult<List<CartItemModel>>> getCartItems(
@@ -15,17 +18,18 @@ abstract class CartRepository {
       required String token,
       required String productId,
       required int quantity});
-  Future<CartResult<OrderModel>> checkoutCart({
-    required String token,
-    required double total,
-    required UserModel cliente,
-    required List<CartItemModelHiper> items,
-    required List<MeiosPagamentoModel> meiosPagamento,
-  });
+  Future<CartResult<OrderModel>> checkoutCart(
+      {required String token,
+      required double total,
+      required UserModel cliente,
+      required List<CartItemModelHiper> items,
+      required List<MeiosPagamentoModel> meiosPagamento,
+      required EnderecoModel enderecoModel});
   Future<bool> changeItemQuantity(
       {required String token,
       required String cartItemId,
       required int quantity});
+  Future<Map<String, dynamic>> fecthCep({required String cep});
 }
 
 class CartRepositoryImpl implements CartRepository {
@@ -91,6 +95,7 @@ class CartRepositoryImpl implements CartRepository {
     required UserModel cliente,
     required List<CartItemModelHiper> items,
     required List<MeiosPagamentoModel> meiosPagamento,
+    required EnderecoModel enderecoModel,
   }) async {
     final result = await _httpManager.restRequest(
       url: Endpoints.checkout,
@@ -104,11 +109,15 @@ class CartRepositoryImpl implements CartRepository {
     if (result['result'] != null) {
       final order = OrderModel.fromJson(result['result']);
       cliente.endereco = EnderecoModel(
-          cep: "95088530",
-          logradouro: "Rua Giovani Batastini",
-          numero: "1115",
-          bairro: "São Victor Cohab",
-          codigoIBGE: "4305108");
+          cep: enderecoModel.cep,
+          logradouro: enderecoModel.logradouro,
+          numero: enderecoModel.numero,
+          bairro: enderecoModel.bairro,
+          cidade: enderecoModel.cidade,
+          estado: enderecoModel.estado,
+          codigoIBGE: enderecoModel.codigoIBGE,
+          referencia: enderecoModel.referencia,
+          complemento: enderecoModel.complemento);
       cliente.entrega = cliente.endereco;
       await postPedidoDeVendaHiper(
           tokenHiper: cliente.tokenHiper!,
@@ -166,7 +175,7 @@ class CartRepositoryImpl implements CartRepository {
       "enderecoDeCobranca": {
         "bairro": endereco.bairro,
         "cep": endereco.cep,
-        "codigoIbge": int.parse(endereco.codigoIBGE),
+        "codigoIbge": int.parse(endereco.codigoIBGE!),
         "complemento": endereco.complemento,
         "logradouro": endereco.logradouro,
         "numero": endereco.numero
@@ -174,7 +183,7 @@ class CartRepositoryImpl implements CartRepository {
       "enderecoDeEntrega": {
         "bairro": endereco.bairro,
         "cep": endereco.cep,
-        "codigoIbge": int.parse(endereco.codigoIBGE),
+        "codigoIbge": int.parse(endereco.codigoIBGE!),
         "complemento": endereco.complemento,
         "logradouro": endereco.logradouro,
         "numero": endereco.numero
@@ -207,6 +216,24 @@ class CartRepositoryImpl implements CartRepository {
       return true;
     } else {
       return false;
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> fecthCep({required String cep}) async {
+    try {
+      final response =
+          await http.get(Uri.parse('https://viacep.com.br/ws/$cep/json/'));
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        final notCNPJ = jsonEncode({"erro": true});
+        return json.decode(notCNPJ);
+        // throw Exception('Não foi possível buscar o Cep!');
+      }
+    } catch (e) {
+      final notCNPJ = jsonEncode({"erro": true});
+      return json.decode(notCNPJ);
     }
   }
 }

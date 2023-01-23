@@ -8,8 +8,11 @@ import 'package:dartt_shop/src/pages/cart/repository/cart_repository.dart';
 import 'package:dartt_shop/src/pages/cart/result/cart_result.dart';
 import 'package:dartt_shop/src/pages/commons/payment_dialog.dart';
 import 'package:dartt_shop/src/pages/home/controller/home_controller.dart';
+import 'package:dartt_shop/src/services/pagamento_helper.dart';
 import 'package:dartt_shop/src/services/utils_services.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoder2/geocoder2.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 
 class CartController extends GetxController {
@@ -21,10 +24,17 @@ class CartController extends GetxController {
   final prodController = Get.find<HomeController>();
   final utilServices = UtilsServices();
 
+  TextEditingController controllerCep = TextEditingController();
   List<MeiosPagamentoModel> meiosPagamento = [];
   List<CartItemModel> cartItems = [];
   bool isCheckoutLoading = false;
-  EnderecoModel? endereco;
+  EnderecoModel endereco = EnderecoModel();
+  FormaPagamento dropdownValue = list.first;
+  bool condictions = false;
+  int meioPagamento = 0;
+  int nParcelas = 1;
+  int typeAdress = 0;
+  bool isLoading = false;
 
   @override
   void onInit() async {
@@ -37,28 +47,60 @@ class CartController extends GetxController {
     update();
   }
 
+  void setLoading(bool value) {
+    isLoading = value;
+    update();
+  }
+
   void setMeiosPagamento(MeiosPagamentoModel value) {
     meiosPagamento.clear();
     meiosPagamento.add(value);
     update();
   }
 
+  void setTypeAdress(int value) {
+    typeAdress = value;
+    update();
+  }
+
+  void setCondictions(bool value) {
+    condictions = value;
+    update();
+  }
+
+  void setMeioPagamento(int value) {
+    meioPagamento = value;
+    update();
+  }
+
+  void setNParcelas(int value) {
+    nParcelas = value;
+    update();
+  }
+
+  void setDropDownButton(FormaPagamento value) {
+    dropdownValue = value;
+    update();
+  }
+
   void setEndereco(EnderecoModel value) {
-    endereco!.cep = value.cep;
-    endereco!.logradouro = value.logradouro;
-    endereco!.numero = value.numero;
-    endereco!.bairro = value.bairro;
-    endereco!.complemento = value.complemento;
-    endereco!.codigoIBGE = value.codigoIBGE;
+    endereco = value;
+    update();
+  }
+
+  void setControllerCep(String value) {
+    controllerCep.text = value;
     update();
   }
 
   Future<void> getCartItems() async {
+    setLoading(true);
     final CartResult<List<CartItemModel>> result =
         await cartRepository.getCartItems(
       token: authController.user.token!,
       userId: authController.user.id!,
     );
+    setLoading(false);
 
     result.when(success: (data) async {
       cartItems = data;
@@ -105,10 +147,13 @@ class CartController extends GetxController {
         total: cartTotalPrice(),
         cliente: authController.user,
         items: cartModelHiper,
-        meiosPagamento: meiosPagamento);
+        meiosPagamento: meiosPagamento,
+        enderecoModel: endereco);
     setCheckoutLoading(false);
     result.when(success: (order) {
       cartItems.clear();
+      setEndereco(EnderecoModel());
+      meiosPagamento.clear();
       update();
       showDialog(
           context: Get.context!,
@@ -176,4 +221,67 @@ class CartController extends GetxController {
         ? 0
         : cartItems.map((e) => e.quantity).reduce((a, b) => a + b);
   }
+
+  Future<void> getCep(String cep) async {
+    setLoading(true);
+    final result = await cartRepository.fecthCep(cep: cep);
+    if (result['erro'] == "true" || result['erro'] == true) {
+      utilServices.showToast(message: "Erro ao buscar CEP! Tente novamente.");
+    } else {
+      setEndereco(EnderecoModel(
+          cep: result['cep'] as String,
+          logradouro: result['logradouro'] as String,
+          bairro: result['bairro'] as String,
+          cidade: result['localidade'] as String,
+          estado: result['uf'] as String,
+          codigoIBGE: result['ibge'] as String));
+      setControllerCep(result['cep'] as String);
+    }
+    setLoading(false);
+  }
+
+  Future<bool> getPosition() async {
+    setLoading(true);
+    try {
+      LocationPermission permissao;
+      bool ativado = await Geolocator.isLocationServiceEnabled();
+      if (!ativado) {
+        utilServices.showToast(
+            message: "Habilite sua localização em seu dispositivo!");
+        return false;
+      }
+      permissao = await Geolocator.checkPermission();
+      if (permissao == LocationPermission.denied) {
+        permissao = await Geolocator.requestPermission();
+        if (permissao == LocationPermission.denied) {
+          utilServices.showToast(message: "Autorize o acesso a localização!");
+          return false;
+        }
+      }
+      if (permissao == LocationPermission.deniedForever) {
+        utilServices.showToast(message: "Autorize o acesso a localização!");
+        return false;
+      }
+      Position posicao = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+
+      double latitude = posicao.latitude;
+      double longitude = posicao.longitude;
+      GeoData data = await Geocoder2.getDataFromCoordinates(
+          latitude: latitude,
+          longitude: longitude,
+          googleMapApiKey: "AIzaSyDNQO29-7VwIFwXG8L9oYYD34CrNNcEjws");
+      getCep(data.postalCode);
+      setLoading(false);
+      return true;
+    } catch (e) {
+      utilServices.showToast(message: "Busque por cep ou digite seu endereço!");
+      setLoading(false);
+      return false;
+    }
+  }
 }
+
+
+// geocodeAPI: 760857287847265987379x79577
+// GoogleAPI: AIzaSyDNQO29-7VwIFwXG8L9oYYD34CrNNcEjws

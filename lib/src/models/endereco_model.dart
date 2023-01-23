@@ -5,23 +5,28 @@ part 'endereco_model.g.dart';
 
 @JsonSerializable()
 class EnderecoModel {
-  String id;
-  String cep;
-  String logradouro;
-  String numero;
-  String bairro;
-  String codigoIBGE;
-  String complemento;
+  String? id;
+  String? cep;
+  String? logradouro;
+  String? numero;
+  String? bairro;
+  String? codigoIBGE;
+  String? complemento;
+  String? referencia;
+  String? cidade;
+  String? estado;
 
-  EnderecoModel({
-    this.id = '',
-    required this.cep,
-    required this.logradouro,
-    required this.numero,
-    required this.bairro,
-    required this.codigoIBGE,
-    this.complemento = '',
-  });
+  EnderecoModel(
+      {this.id = '',
+      this.cep,
+      this.logradouro,
+      this.numero = '',
+      this.bairro,
+      this.codigoIBGE,
+      this.complemento = '',
+      this.referencia = '',
+      this.cidade,
+      this.estado});
 
   int convertStringInt(String value) {
     return int.parse(value);

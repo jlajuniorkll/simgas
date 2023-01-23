@@ -2,6 +2,7 @@ const String baseUrl = 'https://parseapi.back4app.com/functions';
 const String baseUrlHiper = 'http://ms-ecommerce.hiper.com.br/api/v1';
 const String chaveIdHiper =
     '05234bb2b12c65dc3319b9db6540d6d2492f5cea7bd1e550ff11d73e5d4e9b89';
+const String baseCep = "https://viacep.com.br/ws/";
 
 abstract class Endpoints {
   static const String signin = '$baseUrl/login';
@@ -22,4 +23,5 @@ abstract class Endpoints {
   static const String getProductsHiper =
       '$baseUrlHiper/produtos/pontoDeSincronizacao';
   static const String postPedidoDeVenda = '$baseUrlHiper/pedido-de-venda/';
+  static const String getCep = baseCep;
 }

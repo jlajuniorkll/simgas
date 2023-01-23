@@ -1,19 +1,13 @@
 import 'package:dartt_shop/src/config/custom_colors.dart';
 import 'package:dartt_shop/src/pages/auth/controller/auth_controller.dart';
 import 'package:dartt_shop/src/pages/commons/custom_text_field.dart';
+import 'package:dartt_shop/src/services/formatters.dart';
 import 'package:dartt_shop/src/services/validators.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class SignupScreen extends StatelessWidget {
   SignupScreen({Key? key}) : super(key: key);
-
-  final cpfFormatter = MaskTextInputFormatter(
-      mask: '###.###.###-##', filter: {'#': RegExp(r'[0-9]')});
-
-  final phoneFormatter = MaskTextInputFormatter(
-      mask: '(##) #####.####', filter: {'#': RegExp(r'[0-9]')});
 
   final _formKey = GlobalKey<FormState>();
   final authController = Get.find<AuthController>();

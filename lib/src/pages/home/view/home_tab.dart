@@ -1,6 +1,6 @@
 import 'package:add_to_cart_animation/add_to_cart_animation.dart';
 import 'package:add_to_cart_animation/add_to_cart_icon.dart';
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:dartt_shop/src/config/custom_colors.dart';
 import 'package:dartt_shop/src/pages/base/controller/navigation_controller.dart';
 import 'package:dartt_shop/src/pages/cart/controller/cart_controller.dart';
@@ -45,8 +45,10 @@ class _HomeTabState extends State<HomeTab> {
             child: GestureDetector(onTap: () {
               navigationController.navigatePageView(NavigationTabs.cart);
             }, child: GetBuilder<CartController>(builder: (controller) {
-              return Badge(
-                  badgeColor: CustomColors.customContrastColor,
+              return badges.Badge(
+                  badgeStyle: badges.BadgeStyle(
+                    badgeColor: CustomColors.customContrastColor,
+                  ),
                   badgeContent: Text(
                     controller.getCartTotalItems().toString(),
                     style: const TextStyle(color: Colors.white, fontSize: 12.0),

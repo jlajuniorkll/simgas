@@ -6,6 +6,7 @@ import 'package:dartt_shop/src/pages/cart/binding/cart_binding.dart';
 import 'package:dartt_shop/src/pages/home/binding/home_binding.dart';
 import 'package:dartt_shop/src/pages/orders/binding/orders_binding.dart';
 import 'package:dartt_shop/src/pages/product/product_screen.dart';
+import 'package:dartt_shop/src/pages/profile/binding/address_binding.dart';
 import 'package:dartt_shop/src/pages/splash/splash_screen.dart';
 import 'package:get/get.dart';
 
@@ -23,6 +24,7 @@ abstract class AppPages {
           HomeBinding(),
           CartBinding(),
           OrdersBinding(),
+          AddressBinding(),
         ]),
   ];
 }

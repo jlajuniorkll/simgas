@@ -1,3 +1,4 @@
+import 'package:dartt_shop/src/constants/keys.dart';
 import 'package:dio/dio.dart';
 
 abstract class HttpMethods {
@@ -36,14 +37,13 @@ class HttpManagerImpl implements HttpManager {
 
     final defaultHeaders = headers?.cast<String, String>() ?? {}
       ..addAll({
-        /*"Access-Control-Allow-Origin": "*", // Required for CORS support to work
-        "Access-Control-Allow-Headers":
-            "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale,X-Parse-Application-Id,X-Parse-REST-API-Key,X-Parse-Session-Token",
-        "Access-Control-Allow-Methods": "POST,GET,OPTIONS,HEAD",*/
+        "Access-Control-Allow-Origin": "*", // Required for CORS support to work
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Access-Control-Allow-Origin, Accept",
         'content-type': 'application/json',
         'accept': 'application/json',
-        'X-Parse-Application-Id': 'PxFlRfrRT5zIjIvRlD2g9xaEYTO9QPawiM8wGo8e',
-        'X-Parse-REST-API-Key': 'Hx0byqGFMna8YK0XTtZ01QlBbaI7FZHnpQcLbDj3',
+        'X-Parse-Application-Id': xParseId,
+        'X-Parse-REST-API-Key': xRestApiKey,
       });
 
     Dio dio = Dio();

@@ -1,7 +1,7 @@
+import 'package:dartt_shop/src/constants/keys.dart';
+
 const String baseUrl = 'https://parseapi.back4app.com/functions';
 const String baseUrlHiper = 'http://ms-ecommerce.hiper.com.br/api/v1';
-const String chaveIdHiper =
-    '05234bb2b12c65dc3319b9db6540d6d2492f5cea7bd1e550ff11d73e5d4e9b89';
 const String baseCep = "https://viacep.com.br/ws/";
 
 abstract class Endpoints {
@@ -18,8 +18,12 @@ abstract class Endpoints {
   static const String getAllOrders = '$baseUrl/get-orders';
   static const String getOrderItems = '$baseUrl/get-order-items';
   static const String changePassword = '$baseUrl/change-password';
+  static const String saveAddress = '$baseUrl/add-address';
+  static const String updateUser = '$baseUrl/change-address';
+  static const String updateUserDelivery = '$baseUrl/change-delivery';
+  static const String getAddress = '$baseUrl/get-address';
   static const String getTokenHiper =
-      '$baseUrlHiper/auth/gerar-token/$chaveIdHiper';
+      '$baseUrlHiper/auth/gerar-token/$keyHiper';
   static const String getProductsHiper =
       '$baseUrlHiper/produtos/pontoDeSincronizacao';
   static const String postPedidoDeVenda = '$baseUrlHiper/pedido-de-venda/';

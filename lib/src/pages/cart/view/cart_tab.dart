@@ -1,4 +1,4 @@
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:dartt_shop/src/config/custom_colors.dart';
 import 'package:dartt_shop/src/pages/cart/controller/cart_controller.dart';
 import 'package:dartt_shop/src/pages/cart/view/components/alert_adress.dart';
@@ -115,11 +115,12 @@ class _CartTabState extends State<CartTab> {
                                         child: SizedBox(
                                           height: 17,
                                           width: 17,
-                                          child: Badge(
-                                            padding: EdgeInsets.zero,
-                                            alignment: Alignment.center,
-                                            badgeColor: CustomColors
-                                                .customContrastColor,
+                                          child: badges.Badge(
+                                            badgeStyle: badges.BadgeStyle(
+                                              padding: EdgeInsets.zero,
+                                              badgeColor: CustomColors
+                                                  .customContrastColor,
+                                            ),
                                             badgeContent: const Icon(
                                               Icons.warning,
                                               color: Colors.white,
@@ -157,12 +158,12 @@ class _CartTabState extends State<CartTab> {
                                             "Habilite sua localização neste dispositivo!");
                                   }
                                 },
-                                child: controller.endereco.cep != null &&
-                                        controller.endereco.numero!.isNotEmpty
+                                child: controller.entrega.cep != null &&
+                                        controller.entrega.numero!.isNotEmpty
                                     ? Row(
                                         children: [
                                           Text(
-                                              '${controller.endereco.logradouro}, ${controller.endereco.numero}'),
+                                              '${controller.entrega.logradouro}, ${controller.entrega.numero}'),
                                         ],
                                       )
                                     : Row(
@@ -180,11 +181,12 @@ class _CartTabState extends State<CartTab> {
                                             child: SizedBox(
                                               height: 17,
                                               width: 17,
-                                              child: Badge(
-                                                padding: EdgeInsets.zero,
-                                                alignment: Alignment.center,
-                                                badgeColor: CustomColors
-                                                    .customContrastColor,
+                                              child: badges.Badge(
+                                                badgeStyle: badges.BadgeStyle(
+                                                  padding: EdgeInsets.zero,
+                                                  badgeColor: CustomColors
+                                                      .customContrastColor,
+                                                ),
                                                 badgeContent: const Icon(
                                                   Icons.warning,
                                                   color: Colors.white,
@@ -203,7 +205,8 @@ class _CartTabState extends State<CartTab> {
                               GetBuilder<CartController>(builder: (controller) {
                             return ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                  primary: CustomColors.customSwatchColor,
+                                  backgroundColor:
+                                      CustomColors.customSwatchColor,
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(18))),
                               onPressed: (controller.isCheckoutLoading ||
@@ -213,10 +216,10 @@ class _CartTabState extends State<CartTab> {
                                       bool? result =
                                           await showOrderConfirmation();
                                       if (result == true) {
-                                        if (cartController.endereco.logradouro!
+                                        if (cartController.entrega.logradouro!
                                                 .isNotEmpty &&
                                             cartController
-                                                .endereco.numero!.isNotEmpty) {
+                                                .entrega.numero!.isNotEmpty) {
                                           if (cartController
                                               .meiosPagamento.isNotEmpty) {
                                             cartController.checkoutCart();

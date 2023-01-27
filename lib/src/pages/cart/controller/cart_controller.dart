@@ -1,3 +1,4 @@
+import 'package:dartt_shop/src/constants/keys.dart';
 import 'package:dartt_shop/src/models/cart_itemmodel.dart';
 import 'package:dartt_shop/src/models/endereco_model.dart';
 import 'package:dartt_shop/src/models/item_model.dart';
@@ -28,7 +29,8 @@ class CartController extends GetxController {
   List<MeiosPagamentoModel> meiosPagamento = [];
   List<CartItemModel> cartItems = [];
   bool isCheckoutLoading = false;
-  EnderecoModel endereco = EnderecoModel();
+  // EnderecoModel endereco = EnderecoModel();
+  EnderecoModel entrega = EnderecoModel();
   FormaPagamento dropdownValue = list.first;
   bool condictions = false;
   int meioPagamento = 0;
@@ -83,8 +85,13 @@ class CartController extends GetxController {
     update();
   }
 
-  void setEndereco(EnderecoModel value) {
-    endereco = value;
+  //void setEndereco(EnderecoModel value) {
+  //  endereco = value;
+  //  update();
+  // }
+
+  void setEntrega(EnderecoModel value) {
+    entrega = value;
     update();
   }
 
@@ -148,11 +155,12 @@ class CartController extends GetxController {
         cliente: authController.user,
         items: cartModelHiper,
         meiosPagamento: meiosPagamento,
-        enderecoModel: endereco);
+        enderecoModel: authController.user.endereco!,
+        entrega: authController.user.entrega!);
     setCheckoutLoading(false);
     result.when(success: (order) {
       cartItems.clear();
-      setEndereco(EnderecoModel());
+      setEntrega(EnderecoModel());
       meiosPagamento.clear();
       update();
       showDialog(
@@ -228,7 +236,7 @@ class CartController extends GetxController {
     if (result['erro'] == "true" || result['erro'] == true) {
       utilServices.showToast(message: "Erro ao buscar CEP! Tente novamente.");
     } else {
-      setEndereco(EnderecoModel(
+      setEntrega(EnderecoModel(
           cep: result['cep'] as String,
           logradouro: result['logradouro'] as String,
           bairro: result['bairro'] as String,
@@ -270,7 +278,7 @@ class CartController extends GetxController {
       GeoData data = await Geocoder2.getDataFromCoordinates(
           latitude: latitude,
           longitude: longitude,
-          googleMapApiKey: "AIzaSyDNQO29-7VwIFwXG8L9oYYD34CrNNcEjws");
+          googleMapApiKey: keyGoogleMap);
       getCep(data.postalCode);
       setLoading(false);
       return true;
@@ -279,6 +287,19 @@ class CartController extends GetxController {
       setLoading(false);
       return false;
     }
+  }
+
+  Future<void> saveAddressDelivery() async {
+    final result = await cartRepository.saveAddressDelivery(
+        token: authController.user.token!, address: entrega);
+    result.when(success: (data) {
+      authController.user.idEntrega = data;
+      authController.getEnderecoSaved();
+      authController.update();
+    }, error: (message) {
+      utilServices.showToast(message: message, isError: true);
+    });
+    update();
   }
 }
 

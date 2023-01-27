@@ -57,8 +57,9 @@ class HomeController extends GetxController {
       allProductsFiltered.addAll(allProducts);
     }
     update();
-    if (currentCategory != null) return;
-    await getAllProductsHiper();
+    if (currentCategory == null) {
+      await getAllProductsHiper();
+    }
   }
 
   Future<void> getAllCategoriesHiper() async {
@@ -77,19 +78,18 @@ class HomeController extends GetxController {
   }
 
   void filterByTitle() {
+    selectCategory('Todos');
     allProductsFiltered.clear();
     if (searchTitle.value.isNotEmpty) {
-      selectCategory('Todos');
       allProductsFiltered.addAll(allProducts.where((e) =>
           e.itemName.toUpperCase().contains(searchTitle.value.toUpperCase())));
     } else {
       allProductsFiltered.addAll(allProducts);
     }
+    update();
   }
 
   Future<void> getAllProductsHiper({bool canLoad = true}) async {
-    allProductsFiltered.clear();
-    allProducts.clear();
     if (canLoad) {
       setLoading(true, isProduct: true);
     }
@@ -97,6 +97,7 @@ class HomeController extends GetxController {
         tokenHiper: authController.user.tokenHiper!);
     result.when(
       success: (data) {
+        allProducts.clear();
         allProducts.addAll(data);
       },
       error: (message) {

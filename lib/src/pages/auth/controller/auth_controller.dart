@@ -51,6 +51,7 @@ class AuthController extends GetxController {
 
   void saveTokenAndProccedToBase() async {
     final result = await getTokenHiper();
+    await getEnderecoSaved();
     if (result) {
       utilsServices.saveLocalData(key: StorageKeys.token, data: user.token!);
       Get.offAllNamed(PagesRoutes.baseRoute);
@@ -113,5 +114,28 @@ class AuthController extends GetxController {
       update();
       return true;
     }
+  }
+
+  Future<void> getEnderecoSaved() async {
+    if (user.idEndereco != null) {
+      final result = await authRepository.getAddress(
+          token: user.token!, idAddress: user.idEndereco!);
+      result.when(success: (data) {
+        user.endereco = data;
+      }, error: (message) {
+        utilsServices.showToast(message: message, isError: true);
+      });
+    }
+
+    if (user.idEntrega != null) {
+      final result = await authRepository.getAddress(
+          token: user.token!, idAddress: user.idEntrega!);
+      result.when(success: (data) {
+        user.entrega = data;
+      }, error: (message) {
+        utilsServices.showToast(message: message, isError: true);
+      });
+    }
+    update();
   }
 }

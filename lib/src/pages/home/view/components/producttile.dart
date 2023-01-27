@@ -29,10 +29,10 @@ class _ProductTileState extends State<ProductTile> {
       tileIcon = Icons.check;
     });
 
-    await Future.delayed(const Duration(milliseconds: 2000));
-
-    setState(() {
-      tileIcon = Icons.add_shopping_cart_outlined;
+    await Future.delayed(const Duration(milliseconds: 1000), () {
+      setState(() {
+        tileIcon = Icons.add_shopping_cart_outlined;
+      });
     });
   }
 

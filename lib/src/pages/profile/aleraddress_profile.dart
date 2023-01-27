@@ -1,20 +1,20 @@
 import 'package:dartt_shop/src/config/custom_colors.dart';
-import 'package:dartt_shop/src/pages/cart/controller/cart_controller.dart';
 import 'package:dartt_shop/src/pages/commons/custom_text_field.dart';
+import 'package:dartt_shop/src/pages/profile/controller/address_controller.dart';
 import 'package:dartt_shop/src/services/formatters.dart';
 import 'package:dartt_shop/src/services/validators.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class AlertAdress extends StatelessWidget {
-  const AlertAdress({
+class AlertAdressProfile extends StatelessWidget {
+  const AlertAdressProfile({
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final formKey = GlobalKey<FormState>();
-    return GetBuilder<CartController>(builder: (controller) {
+    return GetBuilder<AddressController>(builder: (controller) {
       final topPadding = controller.typeAdress == 0 ? 12.0 : 4.0;
       return AlertDialog(
           shape:
@@ -23,23 +23,23 @@ class AlertAdress extends StatelessWidget {
           content: Form(
               key: formKey,
               child: SingleChildScrollView(
-                  child: Column(mainAxisSize: MainAxisSize.max, children: [
+                  child: Column(mainAxisSize: MainAxisSize.min, children: [
                 const Icon(Icons.location_pin),
                 const Text('Sua Localização:'),
-                if (controller.entrega.logradouro != null)
+                if (controller.endereco.logradouro != null)
                   Column(
                     children: [
-                      Text(controller.entrega.numero!.isEmpty
-                          ? controller.entrega.logradouro!
-                          : '${controller.entrega.logradouro!}, ${controller.entrega.numero!}'),
-                      if (controller.entrega.complemento!.isNotEmpty)
-                        Text(controller.entrega.complemento!),
-                      Text(controller.entrega.bairro!),
+                      Text(controller.endereco.numero!.isEmpty
+                          ? controller.endereco.logradouro!
+                          : '${controller.endereco.logradouro!}, ${controller.endereco.numero!}'),
+                      if (controller.endereco.complemento!.isNotEmpty)
+                        Text(controller.endereco.complemento!),
+                      Text(controller.endereco.bairro!),
                       Text(
-                          '${controller.entrega.cidade}-${controller.entrega.estado}'),
-                      Text('Cep: ${controller.entrega.cep}'),
-                      if (controller.entrega.referencia!.isNotEmpty)
-                        Text(controller.entrega.referencia!),
+                          '${controller.endereco.cidade}-${controller.endereco.estado}'),
+                      Text('Cep: ${controller.endereco.cep}'),
+                      if (controller.endereco.referencia!.isNotEmpty)
+                        Text(controller.endereco.referencia!),
                     ],
                   ),
                 Padding(
@@ -119,45 +119,45 @@ class AlertAdress extends StatelessWidget {
                                   label: "CEP",
                                   validator: cepValidator,
                                   inputFormatters: [cepFormatter],
-                                  iniValue: controller.entrega.cep,
+                                  iniValue: controller.endereco.cep,
                                   onSaved: (value) {
-                                    controller.entrega.cep = value!;
+                                    controller.endereco.cep = value!;
                                   }),
                               CustomTextField(
                                   textInputType: TextInputType.text,
                                   icon: Icons.document_scanner,
                                   label: "Endereco",
-                                  iniValue: controller.entrega.logradouro,
+                                  iniValue: controller.endereco.logradouro,
                                   validator: logradouroValidator,
                                   onSaved: (value) {
-                                    controller.entrega.logradouro = value!;
+                                    controller.endereco.logradouro = value!;
                                   }),
                               CustomTextField(
                                   textInputType: TextInputType.text,
                                   icon: Icons.document_scanner,
                                   label: "Bairro",
-                                  iniValue: controller.entrega.bairro,
+                                  iniValue: controller.endereco.bairro,
                                   validator: bairroValidator,
                                   onSaved: (value) {
-                                    controller.entrega.bairro = value!;
+                                    controller.endereco.bairro = value!;
                                   }),
                               CustomTextField(
                                   textInputType: TextInputType.text,
                                   icon: Icons.document_scanner,
                                   label: "Cidade",
-                                  iniValue: controller.entrega.cidade,
+                                  iniValue: controller.endereco.cidade,
                                   validator: cidadeValidator,
                                   onSaved: (value) {
-                                    controller.entrega.cidade = value!;
+                                    controller.endereco.cidade = value!;
                                   }),
                               CustomTextField(
                                   textInputType: TextInputType.text,
                                   icon: Icons.document_scanner,
-                                  iniValue: controller.entrega.estado,
+                                  iniValue: controller.endereco.estado,
                                   label: "Estado",
                                   validator: estadoValidator,
                                   onSaved: (value) {
-                                    controller.entrega.estado = value!;
+                                    controller.endereco.estado = value!;
                                   }),
                             ],
                           ),
@@ -167,26 +167,26 @@ class AlertAdress extends StatelessWidget {
                           icon: Icons.document_scanner,
                           label: "Número",
                           validator: numeroValidator,
-                          iniValue: controller.entrega.numero,
+                          iniValue: controller.endereco.numero,
                           onSaved: (value) {
-                            controller.entrega.numero = value!;
+                            controller.endereco.numero = value!;
                           }),
                       CustomTextField(
                           textInputType: TextInputType.text,
                           icon: Icons.document_scanner,
                           label: "Ponto de referência",
                           validator: referenciaValidator,
-                          iniValue: controller.entrega.referencia,
+                          iniValue: controller.endereco.referencia,
                           onSaved: (value) {
-                            controller.entrega.referencia = value!;
+                            controller.endereco.referencia = value!;
                           }),
                       CustomTextField(
                           textInputType: TextInputType.text,
                           icon: Icons.document_scanner,
-                          iniValue: controller.entrega.complemento,
+                          iniValue: controller.endereco.complemento,
                           label: "Complemento (opcional)",
                           onSaved: (value) {
-                            controller.entrega.complemento = value!;
+                            controller.endereco.complemento = value!;
                           }),
                     ])
               ]))),
@@ -206,9 +206,9 @@ class AlertAdress extends StatelessWidget {
                 onPressed: () {
                   if (formKey.currentState!.validate()) {
                     formKey.currentState!.save();
-                    controller.controllerCep.text = controller.entrega.cep!;
-                    controller.saveAddressDelivery();
+                    controller.controllerCep.text = controller.endereco.cep!;
                     controller.update();
+                    controller.saveAddress();
                     Navigator.of(context).pop(true);
                   }
                 },

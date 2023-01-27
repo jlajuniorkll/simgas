@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'cart_result.dart';
+part of 'address_result.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -15,7 +15,7 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
 /// @nodoc
-mixin _$CartResult<T> {
+mixin _$AddressResult<T> {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(T data) success,
@@ -57,16 +57,16 @@ mixin _$CartResult<T> {
 }
 
 /// @nodoc
-abstract class $CartResultCopyWith<T, $Res> {
-  factory $CartResultCopyWith(
-          CartResult<T> value, $Res Function(CartResult<T>) then) =
-      _$CartResultCopyWithImpl<T, $Res, CartResult<T>>;
+abstract class $AddressResultCopyWith<T, $Res> {
+  factory $AddressResultCopyWith(
+          AddressResult<T> value, $Res Function(AddressResult<T>) then) =
+      _$AddressResultCopyWithImpl<T, $Res, AddressResult<T>>;
 }
 
 /// @nodoc
-class _$CartResultCopyWithImpl<T, $Res, $Val extends CartResult<T>>
-    implements $CartResultCopyWith<T, $Res> {
-  _$CartResultCopyWithImpl(this._value, this._then);
+class _$AddressResultCopyWithImpl<T, $Res, $Val extends AddressResult<T>>
+    implements $AddressResultCopyWith<T, $Res> {
+  _$AddressResultCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
@@ -85,7 +85,7 @@ abstract class _$$SuccessCopyWith<T, $Res> {
 
 /// @nodoc
 class __$$SuccessCopyWithImpl<T, $Res>
-    extends _$CartResultCopyWithImpl<T, $Res, _$Success<T>>
+    extends _$AddressResultCopyWithImpl<T, $Res, _$Success<T>>
     implements _$$SuccessCopyWith<T, $Res> {
   __$$SuccessCopyWithImpl(
       _$Success<T> _value, $Res Function(_$Success<T>) _then)
@@ -115,7 +115,7 @@ class _$Success<T> implements Success<T> {
 
   @override
   String toString() {
-    return 'CartResult<$T>.success(data: $data)';
+    return 'AddressResult<$T>.success(data: $data)';
   }
 
   @override
@@ -199,7 +199,7 @@ class _$Success<T> implements Success<T> {
   }
 }
 
-abstract class Success<T> implements CartResult<T> {
+abstract class Success<T> implements AddressResult<T> {
   factory Success(final T data) = _$Success<T>;
 
   T get data;
@@ -218,7 +218,7 @@ abstract class _$$ErrorCopyWith<T, $Res> {
 
 /// @nodoc
 class __$$ErrorCopyWithImpl<T, $Res>
-    extends _$CartResultCopyWithImpl<T, $Res, _$Error<T>>
+    extends _$AddressResultCopyWithImpl<T, $Res, _$Error<T>>
     implements _$$ErrorCopyWith<T, $Res> {
   __$$ErrorCopyWithImpl(_$Error<T> _value, $Res Function(_$Error<T>) _then)
       : super(_value, _then);
@@ -247,7 +247,7 @@ class _$Error<T> implements Error<T> {
 
   @override
   String toString() {
-    return 'CartResult<$T>.error(error: $error)';
+    return 'AddressResult<$T>.error(error: $error)';
   }
 
   @override
@@ -330,7 +330,7 @@ class _$Error<T> implements Error<T> {
   }
 }
 
-abstract class Error<T> implements CartResult<T> {
+abstract class Error<T> implements AddressResult<T> {
   factory Error(final String error) = _$Error<T>;
 
   String get error;

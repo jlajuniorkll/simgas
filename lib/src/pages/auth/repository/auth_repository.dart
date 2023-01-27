@@ -1,6 +1,8 @@
 import 'package:dartt_shop/src/constants/endpoints.dart';
+import 'package:dartt_shop/src/models/endereco_model.dart';
 import 'package:dartt_shop/src/models/user_model.dart';
 import 'package:dartt_shop/src/pages/auth/result/auth_result.dart';
+import 'package:dartt_shop/src/pages/profile/result/address_result.dart';
 import 'package:dartt_shop/src/services/http_manager.dart';
 import 'package:dartt_shop/src/pages/auth/repository/auth_errors.dart'
     as autherror;
@@ -21,6 +23,10 @@ abstract class AuthRepository {
     required String token,
   });
   Future<String> getTokenHiper();
+  Future<AddressResult<EnderecoModel>> getAddress({
+    required String token,
+    required String idAddress,
+  });
 }
 
 class AuthRepositoryImpl implements AuthRepository {
@@ -109,6 +115,28 @@ class AuthRepositoryImpl implements AuthRepository {
       return result['token'];
     } else {
       return 'INVALID_TOKENHIPER';
+    }
+  }
+
+  @override
+  Future<AddressResult<EnderecoModel>> getAddress({
+    required String token,
+    required String idAddress,
+  }) async {
+    final result = await _httpManager.restRequest(
+      url: Endpoints.getAddress,
+      method: HttpMethods.post,
+      body: {"addressBilling": idAddress},
+      headers: {
+        'X-Parse-Session-Token': token,
+      },
+    );
+    if (result['result'] != null) {
+      final endereco = EnderecoModel.fromJson(result['result']);
+      return AddressResult<EnderecoModel>.success(endereco);
+    } else {
+      return AddressResult<EnderecoModel>.error(
+          "Não foi possível salvar o endereço!");
     }
   }
 }

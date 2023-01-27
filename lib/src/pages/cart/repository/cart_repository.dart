@@ -7,6 +7,7 @@ import 'package:dartt_shop/src/models/order_model.dart';
 import 'package:dartt_shop/src/models/pagamento_model.dart';
 import 'package:dartt_shop/src/models/user_model.dart';
 import 'package:dartt_shop/src/pages/cart/result/cart_result.dart';
+import 'package:dartt_shop/src/pages/profile/result/address_result.dart';
 import 'package:dartt_shop/src/services/http_manager.dart';
 import 'package:http/http.dart' as http;
 
@@ -18,18 +19,22 @@ abstract class CartRepository {
       required String token,
       required String productId,
       required int quantity});
-  Future<CartResult<OrderModel>> checkoutCart(
-      {required String token,
-      required double total,
-      required UserModel cliente,
-      required List<CartItemModelHiper> items,
-      required List<MeiosPagamentoModel> meiosPagamento,
-      required EnderecoModel enderecoModel});
+  Future<CartResult<OrderModel>> checkoutCart({
+    required String token,
+    required double total,
+    required UserModel cliente,
+    required List<CartItemModelHiper> items,
+    required List<MeiosPagamentoModel> meiosPagamento,
+    required EnderecoModel enderecoModel,
+    required EnderecoModel entrega,
+  });
   Future<bool> changeItemQuantity(
       {required String token,
       required String cartItemId,
       required int quantity});
   Future<Map<String, dynamic>> fecthCep({required String cep});
+  Future<AddressResult<String>> saveAddressDelivery(
+      {required String token, required EnderecoModel address});
 }
 
 class CartRepositoryImpl implements CartRepository {
@@ -96,6 +101,7 @@ class CartRepositoryImpl implements CartRepository {
     required List<CartItemModelHiper> items,
     required List<MeiosPagamentoModel> meiosPagamento,
     required EnderecoModel enderecoModel,
+    required EnderecoModel entrega,
   }) async {
     final result = await _httpManager.restRequest(
       url: Endpoints.checkout,
@@ -118,7 +124,16 @@ class CartRepositoryImpl implements CartRepository {
           codigoIBGE: enderecoModel.codigoIBGE,
           referencia: enderecoModel.referencia,
           complemento: enderecoModel.complemento);
-      cliente.entrega = cliente.endereco;
+      cliente.entrega = EnderecoModel(
+          cep: entrega.cep,
+          logradouro: entrega.logradouro,
+          numero: entrega.numero,
+          bairro: entrega.bairro,
+          cidade: entrega.cidade,
+          estado: entrega.estado,
+          codigoIBGE: entrega.codigoIBGE,
+          referencia: entrega.referencia,
+          complemento: entrega.complemento);
       await postPedidoDeVendaHiper(
           tokenHiper: cliente.tokenHiper!,
           cliente: cliente,
@@ -181,12 +196,12 @@ class CartRepositoryImpl implements CartRepository {
         "numero": endereco.numero
       },
       "enderecoDeEntrega": {
-        "bairro": endereco.bairro,
-        "cep": endereco.cep,
-        "codigoIbge": int.parse(endereco.codigoIBGE!),
-        "complemento": endereco.complemento,
-        "logradouro": endereco.logradouro,
-        "numero": endereco.numero
+        "bairro": entrega.bairro,
+        "cep": entrega.cep,
+        "codigoIbge": int.parse(entrega.codigoIBGE!),
+        "complemento": entrega.complemento,
+        "logradouro": entrega.logradouro,
+        "numero": entrega.numero
       },
       "numeroPedidoDeVenda": pedidoVenda,
       "observacaoDoPedidoDeVenda": observacao,
@@ -234,6 +249,37 @@ class CartRepositoryImpl implements CartRepository {
     } catch (e) {
       final notCNPJ = jsonEncode({"erro": true});
       return json.decode(notCNPJ);
+    }
+  }
+
+  @override
+  Future<AddressResult<String>> saveAddressDelivery(
+      {required String token, required EnderecoModel address}) async {
+    final result = await _httpManager.restRequest(
+      url: Endpoints.saveAddress,
+      method: HttpMethods.post,
+      body: address.toJson(),
+      headers: {
+        'X-Parse-Session-Token': token,
+      },
+    );
+
+    if (result['result'] != null) {
+      final addressId = result['result']['id'];
+      final resultAddress = await _httpManager.restRequest(
+        url: Endpoints.updateUserDelivery,
+        method: HttpMethods.post,
+        body: {"addressDelivery": addressId},
+        headers: {
+          'X-Parse-Session-Token': token,
+        },
+      );
+      if (resultAddress['result'] == null) {
+        return AddressResult.error("Erro ao vincular usuario no endereço!");
+      }
+      return AddressResult.success(result['result']['id']);
+    } else {
+      return AddressResult.error("Não foi possível salvar o endereço!");
     }
   }
 }

@@ -17,21 +17,26 @@ class UserModel {
   String? id;
   String? token;
   String? tokenHiper;
+  @JsonKey(name: 'addressDelivery')
+  String? idEntrega;
   EnderecoModel? entrega;
+  @JsonKey(name: 'addressBilling')
+  String? idEndereco;
   EnderecoModel? endereco;
 
-  UserModel({
-    this.name,
-    this.email,
-    this.phone,
-    this.cpf,
-    this.password,
-    this.id,
-    this.token,
-    this.tokenHiper,
-    this.entrega,
-    this.endereco,
-  });
+  UserModel(
+      {this.name,
+      this.email,
+      this.phone,
+      this.cpf,
+      this.password,
+      this.id,
+      this.token,
+      this.tokenHiper,
+      this.entrega,
+      this.endereco,
+      this.idEndereco,
+      this.idEntrega});
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
       _$UserModelFromJson(json);

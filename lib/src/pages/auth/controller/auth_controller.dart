@@ -13,6 +13,7 @@ class AuthController extends GetxController {
   final UtilsServices utilsServices = UtilsServices();
 
   RxBool isLoading = false.obs;
+  bool isJurudico = false;
 
   UserModel user = UserModel();
 
@@ -20,6 +21,11 @@ class AuthController extends GetxController {
   // void onInit() async {
   //  super.onInit();
   //}
+
+  void setJuridico(bool value) {
+    isJurudico = value;
+    update();
+  }
 
   Future<void> validateToken() async {
     String? token = await utilsServices.getLocalData(key: StorageKeys.token);

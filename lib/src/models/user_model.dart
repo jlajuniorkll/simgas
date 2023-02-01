@@ -12,6 +12,8 @@ class UserModel {
   String? name;
   String? email;
   String? cpf;
+  String? cnpj;
+  String? inscricaoEstadual;
   String? password;
   String? phone;
   String? id;
@@ -36,7 +38,9 @@ class UserModel {
       this.entrega,
       this.endereco,
       this.idEndereco,
-      this.idEntrega});
+      this.idEntrega,
+      this.cnpj,
+      this.inscricaoEstadual});
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
       _$UserModelFromJson(json);

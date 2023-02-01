@@ -10,7 +10,6 @@ class SignupScreen extends StatelessWidget {
   SignupScreen({Key? key}) : super(key: key);
 
   final _formKey = GlobalKey<FormState>();
-  final authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
@@ -42,82 +41,116 @@ class SignupScreen extends StatelessWidget {
                           top: Radius.circular(45),
                         )),
                     child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          CustomTextField(
-                            icon: Icons.email,
-                            label: 'Email',
-                            textInputType: TextInputType.emailAddress,
-                            validator: emailValidator,
-                            onSaved: (value) {
-                              authController.user.email = value;
-                            },
-                          ),
-                          CustomTextField(
-                              icon: Icons.lock,
-                              label: 'Senha',
-                              isSecret: true,
-                              validator: senhaValidator,
-                              onSaved: (value) {
-                                authController.user.password = value;
-                              }),
-                          CustomTextField(
-                              icon: Icons.person,
-                              label: 'Nome',
-                              validator: nameValidator,
-                              onSaved: (value) {
-                                authController.user.name = value;
-                              }),
-                          CustomTextField(
-                              icon: Icons.phone,
-                              label: 'Celular',
-                              inputFormatters: [phoneFormatter],
-                              textInputType: TextInputType.phone,
-                              validator: phoneValidator,
-                              onSaved: (value) {
-                                authController.user.phone = value;
-                              }),
-                          CustomTextField(
-                              icon: Icons.file_copy,
-                              label: 'CPF',
-                              inputFormatters: [cpfFormatter],
-                              textInputType: TextInputType.number,
-                              validator: cpfValidator,
-                              onSaved: (value) {
-                                authController.user.cpf = value;
-                              }),
-                          SizedBox(
-                              height: 50,
-                              child: Obx((() {
-                                return ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(18))),
-                                  onPressed: authController.isLoading.value
-                                      ? null
-                                      : () {
-                                          // remove o teclado ao clicar em entrar
-                                          FocusScope.of(context).unfocus();
-                                          if (_formKey.currentState!
-                                              .validate()) {
-                                            _formKey.currentState!.save();
-                                            authController.signUp();
-                                          }
-                                        },
-                                  child: authController.isLoading.value
-                                      ? const CircularProgressIndicator()
-                                      : const Text(
-                                          'Entrar',
-                                          style: TextStyle(fontSize: 18),
-                                        ),
-                                );
-                              }))),
-                        ],
-                      ),
-                    ),
+                        key: _formKey,
+                        child: GetBuilder<AuthController>(
+                            builder: (authController) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              CustomTextField(
+                                icon: Icons.email,
+                                label: 'Email',
+                                textInputType: TextInputType.emailAddress,
+                                validator: emailValidator,
+                                onSaved: (value) {
+                                  authController.user.email = value;
+                                },
+                              ),
+                              CustomTextField(
+                                  icon: Icons.lock,
+                                  label: 'Senha',
+                                  isSecret: true,
+                                  validator: senhaValidator,
+                                  onSaved: (value) {
+                                    authController.user.password = value;
+                                  }),
+                              CustomTextField(
+                                  icon: Icons.person,
+                                  label: 'Nome',
+                                  validator: nameValidator,
+                                  onSaved: (value) {
+                                    authController.user.name = value;
+                                  }),
+                              CustomTextField(
+                                  icon: Icons.phone,
+                                  label: 'Celular',
+                                  inputFormatters: [phoneFormatter],
+                                  textInputType: TextInputType.phone,
+                                  validator: phoneValidator,
+                                  onSaved: (value) {
+                                    authController.user.phone = value;
+                                  }),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  const Text("Pessoa Jurídica?"),
+                                  Switch(
+                                      value: authController.isJurudico,
+                                      onChanged: (bool value) =>
+                                          authController.setJuridico(value)),
+                                ],
+                              ),
+                              !authController.isJurudico
+                                  ? CustomTextField(
+                                      icon: Icons.file_copy,
+                                      label: 'CPF',
+                                      inputFormatters: [cpfFormatter],
+                                      textInputType: TextInputType.number,
+                                      validator: cpfValidator,
+                                      onSaved: (value) {
+                                        authController.user.cpf = value;
+                                      })
+                                  : Column(
+                                      children: [
+                                        CustomTextField(
+                                            icon: Icons.file_copy,
+                                            label: 'CNPJ',
+                                            inputFormatters: [cnpjFormatter],
+                                            textInputType: TextInputType.number,
+                                            validator: cnpjValidator,
+                                            onSaved: (value) {
+                                              authController.user.cnpj = value;
+                                            }),
+                                        CustomTextField(
+                                            icon: Icons.file_copy,
+                                            label: 'Inscrição Estadual',
+                                            textInputType: TextInputType.number,
+                                            onSaved: (value) {
+                                              authController.user
+                                                  .inscricaoEstadual = value;
+                                            }),
+                                      ],
+                                    ),
+                              SizedBox(
+                                  height: 50,
+                                  child: Obx((() {
+                                    return ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(18))),
+                                      onPressed: authController.isLoading.value
+                                          ? null
+                                          : () {
+                                              // remove o teclado ao clicar em entrar
+                                              FocusScope.of(context).unfocus();
+                                              if (_formKey.currentState!
+                                                  .validate()) {
+                                                _formKey.currentState!.save();
+                                                authController.signUp();
+                                              }
+                                            },
+                                      child: authController.isLoading.value
+                                          ? const CircularProgressIndicator()
+                                          : const Text(
+                                              'Entrar',
+                                              style: TextStyle(fontSize: 18),
+                                            ),
+                                    );
+                                  }))),
+                            ],
+                          );
+                        })),
                   ),
                 ],
               ),

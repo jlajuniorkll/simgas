@@ -43,10 +43,20 @@ String? phoneValidator(String? phone) {
 
 String? cpfValidator(String? cpf) {
   if (cpf == null || cpf.isEmpty) {
-    return 'Digite um celular';
+    return 'Digite um CPF';
   }
 
-  if (!cpf.isCpf) return 'Digite um cpf válido';
+  if (!cpf.isCpf) return 'Digite um CPF válido';
+
+  return null;
+}
+
+String? cnpjValidator(String? cnpj) {
+  if (cnpj == null || cnpj.isEmpty) {
+    return 'Digite um CNPJ';
+  }
+
+  if (!cnpj.isCnpj) return 'Digite um CNPJ válido';
 
   return null;
 }

@@ -6,9 +6,11 @@ import 'package:dartt_shop/src/pages/cart/binding/cart_binding.dart';
 import 'package:dartt_shop/src/pages/home/binding/home_binding.dart';
 import 'package:dartt_shop/src/pages/orders/binding/orders_binding.dart';
 import 'package:dartt_shop/src/pages/product/product_screen.dart';
+import 'package:dartt_shop/src/pages/profile/aleraddress_profile.dart';
 import 'package:dartt_shop/src/pages/profile/binding/address_binding.dart';
 import 'package:dartt_shop/src/pages/splash/splash_screen.dart';
 import 'package:get/get.dart';
+import 'package:dartt_shop/src/pages/cart/view/components/alert_adress.dart';
 
 abstract class AppPages {
   static final pages = <GetPage>[
@@ -26,6 +28,10 @@ abstract class AppPages {
           OrdersBinding(),
           AddressBinding(),
         ]),
+    GetPage(name: PagesRoutes.productAddress, page: () => const AlertAdress()),
+    GetPage(
+        name: PagesRoutes.profileAddress,
+        page: () => const AlertAdressProfile()),
   ];
 }
 
@@ -35,4 +41,6 @@ abstract class PagesRoutes {
   static const String signinRoute = '/signin';
   static const String signupRoute = '/signup';
   static const String productRoute = '/product';
+  static const String productAddress = '/address';
+  static const String profileAddress = '/user-address';
 }

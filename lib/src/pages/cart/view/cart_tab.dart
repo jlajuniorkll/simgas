@@ -1,7 +1,7 @@
 import 'package:badges/badges.dart' as badges;
 import 'package:dartt_shop/src/config/custom_colors.dart';
+import 'package:dartt_shop/src/page_routes/app_pages.dart';
 import 'package:dartt_shop/src/pages/cart/controller/cart_controller.dart';
-import 'package:dartt_shop/src/pages/cart/view/components/alert_adress.dart';
 import 'package:dartt_shop/src/pages/cart/view/components/alert_payment.dart';
 import 'package:dartt_shop/src/pages/cart/view/components/cart_tile.dart';
 import 'package:dartt_shop/src/services/utils_services.dart';
@@ -147,16 +147,8 @@ class _CartTabState extends State<CartTab> {
                                         borderRadius:
                                             BorderRadius.circular(18))),
                                 onPressed: () async {
-                                  final positionEncontrada =
-                                      await controller.getPosition();
-                                  if (positionEncontrada) {
-                                    controller.setTypeAdress(0);
-                                    await enderecoConfirmation();
-                                  } else {
-                                    utilsServices.showToast(
-                                        message:
-                                            "Habilite sua localização neste dispositivo!");
-                                  }
+                                  controller.setTypeAdress(0);
+                                  Get.toNamed(PagesRoutes.productAddress);
                                 },
                                 child: controller.entrega.cep != null &&
                                         controller.entrega.numero!.isNotEmpty
@@ -296,11 +288,11 @@ class _CartTabState extends State<CartTab> {
         });
   }
 
-  Future<bool?> enderecoConfirmation() {
+  /*Future<bool?> enderecoConfirmation() {
     return showDialog<bool>(
         context: context,
         builder: (context) {
           return const AlertAdress();
         });
-  }
+  }*/
 }

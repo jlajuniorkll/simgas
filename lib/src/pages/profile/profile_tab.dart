@@ -1,7 +1,7 @@
 import 'package:dartt_shop/src/config/custom_colors.dart';
+import 'package:dartt_shop/src/page_routes/app_pages.dart';
 import 'package:dartt_shop/src/pages/auth/controller/auth_controller.dart';
 import 'package:dartt_shop/src/pages/commons/custom_text_field.dart';
-import 'package:dartt_shop/src/pages/profile/aleraddress_profile.dart';
 import 'package:dartt_shop/src/pages/profile/controller/address_controller.dart';
 import 'package:dartt_shop/src/services/validators.dart';
 import 'package:flutter/material.dart';
@@ -50,13 +50,32 @@ class _ProfileTabState extends State<ProfileTab> {
                     iniValue: authController.user.name,
                     isInActive: true,
                   ),
-                  CustomTextField(
-                    icon: Icons.file_copy,
-                    label: "CPF",
-                    isSecret: true,
-                    iniValue: authController.user.cpf,
-                    isInActive: true,
-                  ),
+                  authController.user.cnpj != null
+                      ? Column(
+                          children: [
+                            CustomTextField(
+                              icon: Icons.file_copy,
+                              label: "CNPJ",
+                              isSecret: true,
+                              iniValue: authController.user.cnpj,
+                              isInActive: true,
+                            ),
+                            CustomTextField(
+                              icon: Icons.file_copy,
+                              label: "Inscrição Estadual",
+                              isSecret: true,
+                              iniValue: authController.user.inscricaoEstadual,
+                              isInActive: true,
+                            ),
+                          ],
+                        )
+                      : CustomTextField(
+                          icon: Icons.file_copy,
+                          label: "CPF",
+                          isSecret: true,
+                          iniValue: authController.user.cpf,
+                          isInActive: true,
+                        ),
                   CustomTextField(
                     icon: Icons.phone,
                     label: "Celular",
@@ -100,7 +119,7 @@ class _ProfileTabState extends State<ProfileTab> {
                                   color: CustomColors.customSwatchColor)),
                           onPressed: addressController.isLoading
                               ? null
-                              : () => enderecoProfileConfirmation(),
+                              : () => Get.toNamed(PagesRoutes.productAddress),
                           child: addressController.isLoading
                               ? const CircularProgressIndicator()
                               : authController.user.idEndereco != null
@@ -126,13 +145,13 @@ class _ProfileTabState extends State<ProfileTab> {
     );
   }
 
-  Future<bool?> enderecoProfileConfirmation() {
+  /*Future<bool?> enderecoProfileConfirmation() {
     return showDialog<bool>(
         context: context,
         builder: (context) {
           return const AlertAdressProfile();
         });
-  }
+  }*/
 
   Future<bool?> updatePassword() {
     final newPasswordController = TextEditingController();

@@ -23,12 +23,16 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
           : EnderecoModel.fromJson(json['endereco'] as Map<String, dynamic>),
       idEndereco: json['addressBilling'] as String?,
       idEntrega: json['addressDelivery'] as String?,
+      cnpj: json['cnpj'] as String?,
+      inscricaoEstadual: json['inscricaoEstadual'] as String?,
     );
 
 Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
       'fullname': instance.name,
       'email': instance.email,
       'cpf': instance.cpf,
+      'cnpj': instance.cnpj,
+      'inscricaoEstadual': instance.inscricaoEstadual,
       'password': instance.password,
       'phone': instance.phone,
       'id': instance.id,

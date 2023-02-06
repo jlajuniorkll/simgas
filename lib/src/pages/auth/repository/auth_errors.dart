@@ -8,8 +8,8 @@ String authErrorsString(String? code) {
       return 'Ocorreu um erro ao cadastrar o usuário: Nome inválido';
     case 'INVALID_PHONE':
       return 'Ocorreu um erro ao cadastrar o usuário: Celular inválido';
-    case 'INVALID_CPF':
-      return 'Ocorreu um erro ao cadastrar o usuário: CPF inválido';
+    case 'INVALID_DOC':
+      return 'Ocorreu um erro ao cadastrar o usuário: CPF/CNPJ inválido';
     default:
       return 'Ocorreu um erro! Entre em contato pelo Whatsapp';
   }

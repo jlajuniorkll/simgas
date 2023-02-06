@@ -181,7 +181,7 @@ class CartRepositoryImpl implements CartRepository {
       required double valorFrete}) async {
     final bodyReq = {
       "cliente": {
-        "documento": cliente.cpf,
+        "documento": cliente.cpf ?? cliente.cnpj,
         "email": cliente.email,
         "inscricaoEstadual": '',
         "nomeDoCliente": cliente.name,

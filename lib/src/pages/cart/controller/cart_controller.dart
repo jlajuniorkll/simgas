@@ -155,7 +155,8 @@ class CartController extends GetxController {
         cliente: authController.user,
         items: cartModelHiper,
         meiosPagamento: meiosPagamento,
-        enderecoModel: authController.user.endereco!,
+        enderecoModel:
+            authController.user.endereco ?? authController.user.entrega!,
         entrega: authController.user.entrega!);
     setCheckoutLoading(false);
     result.when(success: (order) {

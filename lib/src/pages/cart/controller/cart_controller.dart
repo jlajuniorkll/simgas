@@ -231,11 +231,16 @@ class CartController extends GetxController {
         : cartItems.map((e) => e.quantity).reduce((a, b) => a + b);
   }
 
-  Future<void> getCep(String cep) async {
+  Future<void> getCep({required String cep, bool isSearch = false}) async {
     setLoading(true);
     final result = await cartRepository.fecthCep(cep: cep);
     if (result['erro'] == "true" || result['erro'] == true) {
-      utilServices.showToast(message: "Erro ao buscar CEP! Tente novamente.");
+      if (isSearch) {
+        utilServices.showToast(message: "Erro ao buscar CEP! Tente novamente.");
+      } else {
+        utilServices.showToast(
+            message: "Complete seu perfil e cadastre seu endereço!");
+      }
     } else {
       setEntrega(EnderecoModel(
           cep: result['cep'] as String,
@@ -280,7 +285,7 @@ class CartController extends GetxController {
           latitude: latitude,
           longitude: longitude,
           googleMapApiKey: keyGoogleMap);
-      getCep(data.postalCode);
+      getCep(cep: data.postalCode);
       setLoading(false);
       return true;
     } catch (e) {

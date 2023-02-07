@@ -115,7 +115,9 @@ class AlertAdress extends StatelessWidget {
                                     child: ElevatedButton.icon(
                                         onPressed: () {
                                           controller.getCep(
-                                              controller.controllerCep.text);
+                                              cep:
+                                                  controller.controllerCep.text,
+                                              isSearch: true);
                                         },
                                         icon: const Icon(Icons.search),
                                         label: const Text("CEP")),

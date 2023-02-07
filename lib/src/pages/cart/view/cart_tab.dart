@@ -166,7 +166,8 @@ class _CartTabState extends State<CartTab> {
                                                   width: 15,
                                                   child:
                                                       CircularProgressIndicator())
-                                              : const Text('Definir Endereço'),
+                                              : const Text(
+                                                  'Endereço de entrega'),
                                           Padding(
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 8.0),

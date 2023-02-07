@@ -136,7 +136,7 @@ class AuthRepositoryImpl implements AuthRepository {
       return AddressResult<EnderecoModel>.success(endereco);
     } else {
       return AddressResult<EnderecoModel>.error(
-          "Não foi possível salvar o endereço!");
+          "Olá! Entre em seu perfil e finalize seu cadastro!");
     }
   }
 }

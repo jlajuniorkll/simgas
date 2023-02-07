@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:geocoder2/geocoder2.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class AddressController extends GetxController {
   final AddressRepository addressRepository;
@@ -81,36 +82,40 @@ class AddressController extends GetxController {
     setLoading(true);
     try {
       LocationPermission permissao;
-      bool ativado = await Geolocator.isLocationServiceEnabled();
-      if (!ativado) {
-        utilServices.showToast(
-            message: "Habilite sua localização em seu dispositivo!");
-        return false;
-      }
-      permissao = await Geolocator.checkPermission();
-      if (permissao == LocationPermission.denied) {
-        permissao = await Geolocator.requestPermission();
+      if (await Permission.location.isRestricted) {
+        bool ativado = await Geolocator.isLocationServiceEnabled();
+        if (!ativado) {
+          utilServices.showToast(
+              message: "Habilite sua localização em seu dispositivo!");
+          return false;
+        }
+        permissao = await Geolocator.checkPermission();
         if (permissao == LocationPermission.denied) {
+          permissao = await Geolocator.requestPermission();
+          if (permissao == LocationPermission.denied) {
+            utilServices.showToast(message: "Autorize o acesso a localização!");
+            return false;
+          }
+        }
+        if (permissao == LocationPermission.deniedForever) {
           utilServices.showToast(message: "Autorize o acesso a localização!");
           return false;
         }
-      }
-      if (permissao == LocationPermission.deniedForever) {
-        utilServices.showToast(message: "Autorize o acesso a localização!");
+        Position posicao = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high);
+
+        double latitude = posicao.latitude;
+        double longitude = posicao.longitude;
+        GeoData data = await Geocoder2.getDataFromCoordinates(
+            latitude: latitude,
+            longitude: longitude,
+            googleMapApiKey: keyGoogleMap);
+        getCep(data.postalCode);
+        setLoading(false);
+        return true;
+      } else {
         return false;
       }
-      Position posicao = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
-
-      double latitude = posicao.latitude;
-      double longitude = posicao.longitude;
-      GeoData data = await Geocoder2.getDataFromCoordinates(
-          latitude: latitude,
-          longitude: longitude,
-          googleMapApiKey: keyGoogleMap);
-      getCep(data.postalCode);
-      setLoading(false);
-      return true;
     } catch (e) {
       utilServices.showToast(message: "Busque por cep ou digite seu endereço!");
       setLoading(false);

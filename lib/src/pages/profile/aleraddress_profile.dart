@@ -50,13 +50,12 @@ class AlertAdressProfile extends StatelessWidget {
                                 onPressed: controller.typeAdress != 1
                                     ? () async {
                                         controller.setTypeAdress(1);
-                                        final positionEncontrada =
-                                            await controller.getPosition();
-                                        if (!positionEncontrada) {
+                                        await controller.getPosition();
+                                        /*if (!positionEncontrada) {
                                           utilsServices.showToast(
                                               message:
                                                   "Habilite sua localização neste dispositivo!");
-                                        }
+                                        }*/
                                       }
                                     : null,
                                 child: const Text("Localização Atual")),

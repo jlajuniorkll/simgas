@@ -13,8 +13,9 @@ import 'package:dartt_shop/src/services/pagamento_helper.dart';
 import 'package:dartt_shop/src/services/utils_services.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoder2/geocoder2.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:geocoder_buddy/geocoder_buddy.dart';
 import 'package:get/get.dart';
+import 'package:location/location.dart';
 
 class CartController extends GetxController {
   final CartRepository cartRepository;
@@ -257,33 +258,33 @@ class CartController extends GetxController {
   Future<bool> getPosition() async {
     setLoading(true);
     try {
-      LocationPermission permissao;
-      bool ativado = await Geolocator.isLocationServiceEnabled();
-      if (!ativado) {
-        utilServices.showToast(
-            message: "Habilite sua localização em seu dispositivo!");
-        return false;
-      }
-      permissao = await Geolocator.checkPermission();
-      if (permissao == LocationPermission.denied) {
-        permissao = await Geolocator.requestPermission();
-        if (permissao == LocationPermission.denied) {
-          utilServices.showToast(message: "Autorize o acesso a localização!");
+      Location location = Location();
+
+      bool serviceEnabled;
+      PermissionStatus permissionGranted;
+      LocationData locationData;
+
+      serviceEnabled = await location.serviceEnabled();
+      if (!serviceEnabled) {
+        serviceEnabled = await location.requestService();
+        if (!serviceEnabled) {
           return false;
         }
       }
-      if (permissao == LocationPermission.deniedForever) {
-        utilServices.showToast(message: "Autorize o acesso a localização!");
-        return false;
-      }
-      Position posicao = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
 
-      double latitude = posicao.latitude;
-      double longitude = posicao.longitude;
+      permissionGranted = await location.hasPermission();
+      if (permissionGranted == PermissionStatus.denied) {
+        permissionGranted = await location.requestPermission();
+        if (permissionGranted != PermissionStatus.granted) {
+          return false;
+        }
+      }
+
+      locationData = await location.getLocation();
+
       GeoData data = await Geocoder2.getDataFromCoordinates(
-          latitude: latitude,
-          longitude: longitude,
+          latitude: locationData.latitude!,
+          longitude: locationData.longitude!,
           googleMapApiKey: keyGoogleMap);
       getCep(cep: data.postalCode);
       setLoading(false);
@@ -308,7 +309,6 @@ class CartController extends GetxController {
     update();
   }
 }
-
 
 // geocodeAPI: 760857287847265987379x79577
 // GoogleAPI: AIzaSyDNQO29-7VwIFwXG8L9oYYD34CrNNcEjws

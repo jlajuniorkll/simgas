@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Greengrocer',
+      title: 'SimGas',
       theme: ThemeData(
         primarySwatch: colorPrimaryClient,
         scaffoldBackgroundColor: Colors.white.withAlpha(190),
